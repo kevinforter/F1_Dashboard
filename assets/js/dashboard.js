@@ -99,6 +99,16 @@ function setupControls() {
 
     yearContainer.appendChild(yearLabel.node());
     yearContainer.appendChild(yearSelect.node());
+
+    // Reset Button
+    d3.select("#resetBtn").on("click", () => {
+        state.selectedCircuit = 'all';
+        state.selectedDriver = 'all';
+        // Reset dropdowns UI
+        d3.select("#circuitSelect").property("value", "all");
+        d3.select("#driverSelect").property("value", "all");
+        updateDashboard();
+    });
 }
 
 function updateCircuitDropdown(races) {
