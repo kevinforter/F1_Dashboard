@@ -590,19 +590,22 @@ function drawPerformanceMatrix(races, results) {
     .map(d => d[1])
     .filter(d => d.count >= 1); // Show even if just 1 race!
 
-    // Scales (Reverse! 1 is good, 20 is bad)
+    // Scales (Reverse! 1 is good, maxVal is bad)
+    // Dynamic max based on data (some years have >20 drivers)
+    const maxVal = Math.max(20, d3.max(driverStats, d => Math.max(d.avgGrid, d.avgFinish)) || 20);
+    
     const x = d3.scaleLinear()
-        .domain([20, 1])
+        .domain([maxVal + 1, 1]) // +1 padding
         .range([0, width]);
         
     const y = d3.scaleLinear()
-        .domain([20, 1])
+        .domain([maxVal + 1, 1]) // +1 padding
         .range([height, 0]);
 
     // Diagonal Reference Line (Expected Performance: Start = Finish)
     svg.append("line")
-        .attr("x1", x(20))
-        .attr("y1", y(20))
+        .attr("x1", x(maxVal + 1))
+        .attr("y1", y(maxVal + 1))
         .attr("x2", x(1))
         .attr("y2", y(1))
         .attr("stroke", "#999") // Much lighter
@@ -611,7 +614,7 @@ function drawPerformanceMatrix(races, results) {
         .attr("opacity", 0.8);
 
     svg.append("text")
-        .attr("x", x(20))
+        .attr("x", x(maxVal + 1))
         .attr("y", y(1) - 10)
         .attr("text-anchor", "start")
         .style("fill", "#999") // Lighter color for visibility on dark theme
