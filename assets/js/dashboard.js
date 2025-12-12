@@ -194,9 +194,9 @@ function updateDashboard(yearChanged = false) {
         console.error("Error drawing map:", e);
     }
 
-    // 2. Driver Standings (Context: Season)
+    // 2. Driver Standings (Context: Season or Specific Race Standings)
     try {
-        drawDriverStandings(year, racesOfYear, state.selectedDriver);
+        drawDriverStandings(year, racesOfYear, state.selectedDriver, state.selectedCircuit);
     } catch (e) {
         console.error("Error drawing standings:", e);
     }
@@ -205,10 +205,12 @@ function updateDashboard(yearChanged = false) {
     // Use setTimeout to ensure Grid/Flex layout has computed dimensions
     setTimeout(() => {
         try {
-            if (resultsOfYear.length === 0) {
+            // Ensure we pass full season data, independent of circuit filter
+            const fullSeasonResults = rawData.results.filter(r => raceIds.has(r.raceId));
+            if (fullSeasonResults.length === 0) {
                 console.warn("No results data available for analytics.");
             }
-            drawAnalytics(year, racesOfYear, resultsOfYear);
+            drawAnalytics(year, racesOfYear, fullSeasonResults);
         } catch (e) {
             console.error("Error drawing analytics:", e);
         }
@@ -300,17 +302,29 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
         .on("mouseout", hideTooltip);
 }
 
-function drawDriverStandings(year, races, selectedDriverId) {
+function drawDriverStandings(year, races, selectedDriverId, selectedCircuitId) {
     const container = d3.select("#driverStandings");
     container.html("");
 
-    // Logic: Get standings from the LAST race of the year
-    const lastRace = races.sort((a,b) => parseInt(a.round) - parseInt(b.round)).pop();
+    // Determine which race to show standings for
+    let targetRace = null;
+
+    if (selectedCircuitId !== 'all') {
+        // If circuit filtered -> Show standings AFTER that race
+        // (If multiple races at circuit, take the last one)
+        const circuitRaces = races.filter(r => r.circuitId === selectedCircuitId)
+                                  .sort((a,b) => parseInt(a.round) - parseInt(b.round));
+        targetRace = circuitRaces.pop();
+    } else {
+        // If no filter -> Show standings AFTER layout race of year (Final Standings)
+        // CRITICAL: process a COPY of races to avoid mutating the original array passed by reference
+        targetRace = [...races].sort((a,b) => parseInt(a.round) - parseInt(b.round)).pop();
+    }
     
-    if (!lastRace) return;
+    if (!targetRace) return;
 
     const standings = rawData.driverStandings
-        .filter(s => s.raceId === lastRace.raceId)
+        .filter(s => s.raceId === targetRace.raceId)
         .sort((a,b) => parseInt(a.position) - parseInt(b.position));
 
     const table = container.append("table").attr("class", "f1-table");
@@ -349,7 +363,8 @@ function drawDriverStandings(year, races, selectedDriverId) {
 
 function drawAnalytics(year, races, results) {
     // Shared data prep
-    const sortedRaces = races.sort((a,b) => parseInt(a.round) - parseInt(b.round));
+    // CRITICAL: use copy to avoid mutating source
+    const sortedRaces = [...races].sort((a,b) => parseInt(a.round) - parseInt(b.round));
     
     drawTrajectory(sortedRaces, results);
     drawPerformanceMatrix(sortedRaces, results);
