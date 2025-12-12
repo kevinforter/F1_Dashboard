@@ -38,23 +38,16 @@
                 </select>
             </div>
 
-            <div class="control-group" style="flex-grow: 1; margin-left: 2rem;">
-                <label for="yearSlider" style="color: var(--text-secondary); font-weight: bold; margin-right: 1rem;">YEAR RANGE: <span id="yearLabel" style="color: var(--f1-red);">2010 - 2023</span></label>
-                <input type="range" id="yearSlider" min="2010" max="2023" value="2010" style="width: 200px;">
-                <!-- Note: Ideally a dual-handle slider, but simple range for start year or single year might be easier initially. 
-                     Let's start with single Year filter or 'From Year' filter. 
-                     Correction: Plan said "Year Range". I'll implement a simple interaction: 
-                     Select specific year OR 'All Years' if I can. 
-                     For now, let's just do a simple filter by specific year or keep it cumulative?
-                     Let's stick to "Filter by Year" (Single) for simplicity, or add a checkbox for "All Years".
-                     Better: a simple dropdown or slider for "Year". 
-                     I will implement as "Filter Data from Year X to Present" or specific Year.
-                     Let's do: Slider selects a specific YEAR, and we show data for that year.
-                     Actually, aggregating over all years is more interesting for the Heatmap. 
-                     So maybe the slider filters the "Start Year" (e.g. Data since 2010, since 2015...).
-                     Let's stick to a simple "Year" Filter (Specific Year or All). 
-                     I'll make it a Select for now for simplicity and robustness.
-                -->
+            <div class="control-group">
+                <label for="driverSelect" style="color: var(--text-secondary); font-weight: bold; margin-right: 1rem;">DRIVER</label>
+                <select id="driverSelect">
+                    <option value="all">All Drivers</option>
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
+
+            <div id="yearContainer" class="control-group">
+                <!-- Year Select injected by JS -->
             </div>
             
             <div class="control-group">
