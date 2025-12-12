@@ -334,7 +334,7 @@ function drawTrajectory(races, results) {
     const container = d3.select("#trajectoryChart");
     container.html("");
     
-    const margin = {top: 20, right: 30, bottom: 30, left: 40};
+    const margin = {top: 20, right: 30, bottom: 40, left: 40};
     const rect = container.node().getBoundingClientRect();
     console.log("Trajectory Container Rect:", rect);
     
@@ -429,6 +429,24 @@ function drawTrajectory(races, results) {
         .attr("class", "grid")
         .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(""))
         .style("stroke-opacity", 0.1);
+
+    // Axis Labels
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 35)
+        .style("text-anchor", "middle")
+        .style("fill", "#888")
+        .style("font-size", "10px")
+        .text("Race Round");
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -30)
+        .style("text-anchor", "middle")
+        .style("fill", "#888")
+        .style("font-size", "10px")
+        .text("Total Points");
 
     // Line Generator
     const line = d3.line()
@@ -590,7 +608,7 @@ function drawPerformanceMatrix(races, results) {
             const driver = rawData.driverMap.get(d.driverId);
             showTooltip(e, `
                 <strong>${driver.forename} ${driver.surname}</strong><br>
-                Avg Grid: ${d.avgGrid.toFixed(1)}<br>
+                Avg Start: ${d.avgGrid.toFixed(1)}<br>
                 Avg Finish: ${d.avgFinish.toFixed(1)}
             `);
         })
