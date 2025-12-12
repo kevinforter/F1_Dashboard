@@ -279,7 +279,23 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
              d3.select("#circuitSelect").property("value", newSelect).dispatch("change");
         })
         .on("mouseover", (event, d) => {
-            showTooltip(event, `<strong>${d.name}</strong><br>${d.location}, ${d.country}`);
+            let content = `<strong>${d.name}</strong><br>${d.location}, ${d.country}`;
+            
+            if (selectedDriverId !== 'all') {
+                const race = races.find(r => r.circuitId === d.circuitId);
+                if (race) {
+                    const res = results.find(r => r.raceId === race.raceId && r.driverId === selectedDriverId);
+                    if (res) {
+                        content += `<div style="margin-top: 5px; border-top: 1px solid #555; paddingTop: 5px;">
+                            <strong>${rawData.driverMap.get(selectedDriverId).code} Result:</strong><br>
+                            Position: <span style="color:#fff">${res.positionOrder}</span><br>
+                            Points: <span style="color:#00D2BE">${res.points}</span><br>
+                            Fastest Lap: <span style="color:#fff">${res.fastestLapTime || 'N/A'}</span>
+                        </div>`;
+                    }
+                }
+            }
+            showTooltip(event, content);
         })
         .on("mouseout", hideTooltip);
 }
