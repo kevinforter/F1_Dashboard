@@ -595,6 +595,13 @@ function drawPerformanceMatrix(races, results) {
             `);
         })
         .on("mouseout", hideTooltip);
+
+    // Color Meaning Legend
+    svg.append("circle").attr("cx", width - 80).attr("cy", height - 40).attr("r", 4).attr("fill", "#00D2BE");
+    svg.append("text").attr("x", width - 70).attr("y", height - 40).attr("dy", "0.3em").style("fill", "#bbb").style("font-size", "10px").text("Gained Pos.");
+
+    svg.append("circle").attr("cx", width - 80).attr("cy", height - 25).attr("r", 4).attr("fill", "#E10600");
+    svg.append("text").attr("x", width - 70).attr("y", height - 25).attr("dy", "0.3em").style("fill", "#bbb").style("font-size", "10px").text("Lost Pos.");
 }
 
 // Tooltip Helpers
