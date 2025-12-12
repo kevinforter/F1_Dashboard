@@ -498,7 +498,6 @@ function drawPerformanceMatrix(races, results) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Data Processing: Avg Start vs Avg Finish
-    
     const driverStats = d3.rollups(results, v => {
         const validGrid = v.filter(d => parseInt(d.grid) > 0);
         const validPos = v.filter(d => parseInt(d.positionOrder) > 0);
@@ -533,14 +532,12 @@ function drawPerformanceMatrix(races, results) {
         .attr("opacity", 0.5);
 
     svg.append("text")
-        .attr("x", x(10))
-        .attr("y", y(10))
-        .attr("dy", -5)
-        .attr("text-anchor", "middle")
-        .attr("transform", `rotate(-45, ${x(10)}, ${y(10)})`)
+        .attr("x", x(20))
+        .attr("y", y(1) - 5)
+        .attr("text-anchor", "start")
         .style("fill", "#555")
         .style("font-size", "10px")
-        .text("Expected Performance");
+        .text("- - - Expected Performance");
 
     // Axes
     svg.append("g")
