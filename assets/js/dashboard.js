@@ -189,7 +189,7 @@ function updateDashboard(yearChanged = false) {
     
     // 1. World Map (Context: Season)
     try {
-        drawWorldMap(racesOfYear, state.selectedCircuit); 
+        drawWorldMap(racesOfYear, resultsOfYear, state.selectedDriver, state.selectedCircuit); 
     } catch (e) {
         console.error("Error drawing map:", e);
     }
@@ -217,7 +217,7 @@ function updateDashboard(yearChanged = false) {
 
 // --- VISUALIZATIONS ---
 
-function drawWorldMap(races, selectedCircuitId) {
+function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
     const container = d3.select("#worldMap");
     container.html(""); // Clear
 
@@ -246,8 +246,18 @@ function drawWorldMap(races, selectedCircuitId) {
         .attr("d", path);
 
     // Draw Circuits
-    // Filter unique circuits for this year
-    const circuits = Array.from(new Set(races.map(r => r.circuitId)))
+    // Filter by Driver Points if specific driver selected
+    let racesToShow = races;
+    if (selectedDriverId !== 'all') {
+         const driverPointsRaces = new Set(
+             results.filter(r => r.driverId === selectedDriverId && parseFloat(r.points) > 0)
+                    .map(r => r.raceId)
+         );
+         racesToShow = races.filter(r => driverPointsRaces.has(r.raceId));
+    }
+
+    // Filter unique circuits for this year from the allowed races
+    const circuits = Array.from(new Set(racesToShow.map(r => r.circuitId)))
         .map(id => rawData.circuitMap.get(id))
         .filter(c => c); // Ensure exists
 
