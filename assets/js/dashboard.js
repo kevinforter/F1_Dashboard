@@ -395,8 +395,8 @@ function drawTrajectory(races, results) {
         });
     }
 
-    // Filter: Top 5 + Selected
-    const topDrivers = dataset.sort((a,b) => b.total - a.total).slice(0, 5);
+    // Filter: Top 3 + Selected
+    const topDrivers = dataset.sort((a,b) => b.total - a.total).slice(0, 3);
     const topIds = new Set(topDrivers.map(d => d.driverId));
     
     // Always include selected driver if they exist
