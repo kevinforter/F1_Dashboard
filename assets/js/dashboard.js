@@ -471,6 +471,34 @@ function drawTrajectory(races, results, selectedCircuitId) {
         .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(""))
         .style("stroke-opacity", 0.1);
 
+    // Interaction Zones (Clickable Columns for Every Round)
+    const step = maxRound > 1 ? x(2) - x(1) : width;
+    
+    svg.selectAll(".interaction-bar")
+        .data(races)
+        .enter()
+        .append("rect")
+        .attr("x", d => x(d.round) - (step / 2))
+        .attr("y", 0)
+        .attr("width", step)
+        .attr("height", height)
+        .attr("fill", "#FFF")
+        .attr("opacity", 0) // Invisible by default
+        .style("cursor", "pointer")
+        .on("mouseover", function(e, d) {
+            d3.select(this).attr("opacity", 0.1); // Highlight on hover
+            const circuit = rawData.circuitMap.get(d.circuitId);
+            showTooltip(e, `<strong>Round ${d.round}</strong><br>${circuit.name}`);
+        })
+        .on("mouseout", function() {
+            d3.select(this).attr("opacity", 0);
+            hideTooltip();
+        })
+        .on("click", (e, d) => {
+            const newSelect = d.circuitId === selectedCircuitId ? 'all' : d.circuitId;
+            d3.select("#circuitSelect").property("value", newSelect).dispatch("change");
+        });
+
     // Highlight Selected Circuit Round
     if (selectedCircuitId && selectedCircuitId !== 'all') {
         const matchingRaces = races.filter(r => r.circuitId === selectedCircuitId);
