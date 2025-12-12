@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics - Grid vs Result</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Titillium+Web:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">F1 ANALYTICS</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="data.html">Data & Design</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <header class="hero">
+            <h1>Defining the "Complete" Driver</h1>
+            <p>
+                Formula 1 is not just about raw speed. It's about consistency, race craft, and staying out of trouble.
+                We analyze the modern era to understand what traits separate the champions from the rest.
+            </p>
+            <a href="dashboard.html" class="btn">Explore the Dashboard</a>
+        </header>
+
+        <section style="margin-top: 4rem;">
+            <h2>Research Question</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                "What defines a 'complete' driver in Formula 1?"
+            </p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px;">
+                    <h3>Concept</h3>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">
+                        Beyond the championship points, we break down driver performance into key metrics: 
+                        <strong>Overtaking Ability</strong> (The Fighter), 
+                        <strong>Raw Speed</strong> (The Speedster), and 
+                        <strong>Reliability</strong> (The Consistent).
+                    </p>
+                </div>
+                <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px;">
+                    <h3>Interaction</h3>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">
+                        Use the interactive dashboard to view the season landscape. 
+                        Filter by year to see how the definition of a champion has evolved over the last decade.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

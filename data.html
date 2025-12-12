@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics - Data & Design</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Titillium+Web:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">F1 ANALYTICS</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="data.html">Data & Design</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <section style="margin-bottom: 4rem;">
+            <h1>Data Source</h1>
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                The data for this project is sourced from the Ergast Developer API, a comprehensive database of Formula 1 history.
+                We have focused on the modern era (2010 onwards) to reflect current racing dynamics.
+            </p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 2rem; background: var(--bg-card);">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
+                        <th style="padding: 1rem;">Dataset</th>
+                        <th style="padding: 1rem;">Description</th>
+                        <th style="padding: 1rem;">Size</th>
+                    </tr>
+                </thead>
+                <tbody style="color: var(--text-secondary);">
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 1rem;">races.csv</td>
+                        <td style="padding: 1rem;">Race information (date, circuit, year)</td>
+                        <td style="padding: 1rem;">~164 KB</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 1rem;">results.csv</td>
+                        <td style="padding: 1rem;">Race results (grid, position, driver, constructor)</td>
+                        <td style="padding: 1rem;">~1.7 MB</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 1rem;">drivers.csv</td>
+                        <td style="padding: 1rem;">Driver information (name, nationality)</td>
+                        <td style="padding: 1rem;">~94 KB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h1>Design Choices</h1>
+            <div style="margin-top: 2rem;" class="design-section">
+                <h3>Foundations of Visual Design</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    We utilized a dark theme to match the premium, technological aesthetic of Formula 1. 
+                    The color palette relies on high contrast (White on Dark Grey) for readability, 
+                    with F1 Red used sparingly to guide attention to interactive elements and key headings.
+                </p>
+
+                <h3>Data-Ink Ratio</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    The dashboard minimizes non-data ink. Grid lines are faint or removed. 
+                    The heatmap uses color intensity to convey density without needing explicit numbers in every cell (details on demand).
+                </p>
+                
+                <h3>Human Perception</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    We use position (Bar Chart) and Color Saturation (Heatmap) which are strong pre-attentive attributes. 
+                    The "Grid Position" (Cause) is placed on the X-axis and "Result" (Effect) on the Y-axis, following standard convention.
+                </p>
+            </div>
+        </section>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
+            <p>Created by Kevin Forter & Team. Course: Information Visualization.</p>
+        </footer>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

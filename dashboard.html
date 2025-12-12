@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics - Dashboard</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Titillium+Web:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+</head>
+<body class="noscroll">
+    <nav class="navbar">
+        <div class="logo">F1 ANALYTICS</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="data.html">Data & Design</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <!-- Controls Section -->
+        <div class="controls" style="margin-bottom: 1rem;">
+            <div class="control-group">
+                <label for="circuitSelect" style="color: var(--text-secondary); font-weight: bold; margin-right: 1rem;">CIRCUIT</label>
+                <select id="circuitSelect">
+                    <option value="all">All Circuits</option>
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
+
+            <div class="control-group" style="flex-grow: 1; margin-left: 2rem;">
+                <label for="yearSlider" style="color: var(--text-secondary); font-weight: bold; margin-right: 1rem;">YEAR RANGE: <span id="yearLabel" style="color: var(--f1-red);">2010 - 2023</span></label>
+                <input type="range" id="yearSlider" min="2010" max="2023" value="2010" style="width: 200px;">
+                <!-- Note: Ideally a dual-handle slider, but simple range for start year or single year might be easier initially. 
+                     Let's start with single Year filter or 'From Year' filter. 
+                     Correction: Plan said "Year Range". I'll implement a simple interaction: 
+                     Select specific year OR 'All Years' if I can. 
+                     For now, let's just do a simple filter by specific year or keep it cumulative?
+                     Let's stick to "Filter by Year" (Single) for simplicity, or add a checkbox for "All Years".
+                     Better: a simple dropdown or slider for "Year". 
+                     I will implement as "Filter Data from Year X to Present" or specific Year.
+                     Let's do: Slider selects a specific YEAR, and we show data for that year.
+                     Actually, aggregating over all years is more interesting for the Heatmap. 
+                     So maybe the slider filters the "Start Year" (e.g. Data since 2010, since 2015...).
+                     Let's stick to a simple "Year" Filter (Specific Year or All). 
+                     I'll make it a Select for now for simplicity and robustness.
+                -->
+            </div>
+            
+            <div class="control-group">
+                 <button id="resetBtn" class="btn" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Reset Filters</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid-v2">
+            
+            <!-- Top Section: Map & Standings -->
+            <div class="top-section">
+                <!-- World Map -->
+                <div class="chart-container map-container">
+                    <div class="chart-header">
+                        <h3>Global Circuit Map</h3>
+                        <span class="info-icon" title="Locations of all Grand Prix circuits for the selected year.">ⓘ</span>
+                    </div>
+                    <div id="worldMap"></div>
+                </div>
+
+                <!-- Driver Standings -->
+                <div class="chart-container standings-container">
+                    <div class="chart-header">
+                        <h3>Driver Standings</h3>
+                        <span class="info-icon" title="Final or current driver standings for the selected year.">ⓘ</span>
+                    </div>
+                    <div id="driverStandings" class="scrollable-list"></div>
+                </div>
+            </div>
+
+            <!-- Bottom Section: Insight Lists -->
+            <div class="bottom-section">
+                <!-- List 1: Overtakers -->
+                <div class="chart-container list-card">
+                    <div class="chart-header">
+                        <h4>Top Overtakers</h4>
+                    </div>
+                    <div id="listOvertakers" class="insight-list"></div>
+                </div>
+
+                <!-- List 2: Fastest Lap -->
+                <div class="chart-container list-card">
+                    <div class="chart-header">
+                        <h4>Fastest Laps</h4>
+                    </div>
+                    <div id="listFastestLap" class="insight-list"></div>
+                </div>
+
+                <!-- List 3: Most Crashes -->
+                <div class="chart-container list-card">
+                    <div class="chart-header">
+                        <h4>Most Crashes</h4>
+                    </div>
+                    <div id="listCrashes" class="insight-list"></div>
+                </div>
+
+                <!-- List 4: Positions Lost -->
+                <div class="chart-container list-card">
+                    <div class="chart-header">
+                        <h4>Positions Lost</h4>
+                    </div>
+                    <div id="listPositionsLost" class="insight-list"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>
