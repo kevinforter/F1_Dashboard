@@ -210,7 +210,7 @@ function updateDashboard(yearChanged = false) {
             if (fullSeasonResults.length === 0) {
                 console.warn("No results data available for analytics.");
             }
-            drawAnalytics(year, racesOfYear, fullSeasonResults);
+            drawAnalytics(year, racesOfYear, fullSeasonResults, state.selectedCircuit);
         } catch (e) {
             console.error("Error drawing analytics:", e);
         }
@@ -361,16 +361,16 @@ function drawDriverStandings(year, races, selectedDriverId, selectedCircuitId) {
     });
 }
 
-function drawAnalytics(year, races, results) {
+function drawAnalytics(year, races, results, selectedCircuitId) {
     // Shared data prep
     // CRITICAL: use copy to avoid mutating source
     const sortedRaces = [...races].sort((a,b) => parseInt(a.round) - parseInt(b.round));
     
-    drawTrajectory(sortedRaces, results);
+    drawTrajectory(sortedRaces, results, selectedCircuitId);
     drawPerformanceMatrix(sortedRaces, results);
 }
 
-function drawTrajectory(races, results) {
+function drawTrajectory(races, results, selectedCircuitId) {
     console.log("drawTrajectory called", { racesCount: races.length, resultsCount: results.length });
     const container = d3.select("#trajectoryChart");
     container.html("");
@@ -470,6 +470,25 @@ function drawTrajectory(races, results) {
         .attr("class", "grid")
         .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(""))
         .style("stroke-opacity", 0.1);
+
+    // Highlight Selected Circuit Round
+    if (selectedCircuitId && selectedCircuitId !== 'all') {
+        const matchingRaces = races.filter(r => r.circuitId === selectedCircuitId);
+        // Usually only 1, but handles multiple matches if needed
+        const step = maxRound > 1 ? x(2) - x(1) : width;
+        
+        svg.selectAll(".highlight-bar")
+            .data(matchingRaces)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d.round) - (step / 2))
+            .attr("y", 0)
+            .attr("width", step)
+            .attr("height", height)
+            .attr("fill", "#E10600") // Red highlight
+            .attr("opacity", 0.15)
+            .style("pointer-events", "none");
+    }
 
     // Axis Labels
     svg.append("text")
