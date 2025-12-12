@@ -137,6 +137,20 @@ a:hover {
     color: white;
 }
 
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--f1-red);
+    color: var(--f1-red);
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: var(--f1-red);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(225, 6, 0, 0.4);
+}
+
 /* Dashboard Layout */
 .dashboard-grid {
     display: grid;
