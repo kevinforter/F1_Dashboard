@@ -279,7 +279,14 @@ function drawDriverStandings(year, races, selectedDriverId) {
         const isSelected = s.driverId === selectedDriverId;
         const row = tbody.append("tr")
             .style("background-color", isSelected ? "rgba(56, 125, 255, 0.2)" : null) // Highlight blue
-            .style("font-weight", isSelected ? "bold" : "normal");
+            .style("font-weight", isSelected ? "bold" : "normal")
+            .style("cursor", "pointer")
+            .on("click", () => {
+                 // Toggle behavior? Or just select?
+                 // Let's just select. If already selected, maybe deselect?
+                 const newDriver = state.selectedDriver === s.driverId ? 'all' : s.driverId;
+                 d3.select("#driverSelect").property("value", newDriver).dispatch("change");
+            });
             
         row.append("td").text(s.position);
         row.append("td").text(`${driver.forename} ${driver.surname}`);
@@ -354,7 +361,19 @@ function drawInsights(results, pits) {
         
         const tbody = table.append("tbody");
         data.forEach(d => {
-            const tr = tbody.append("tr");
+            const driverId = d.id || d.driverId; // Handle both key types
+            const isSelected = state.selectedDriver === driverId;
+            
+            const tr = tbody.append("tr")
+                .style("background-color", isSelected ? "rgba(56, 125, 255, 0.2)" : null)
+                .style("cursor", "pointer")
+                .on("click", () => {
+                    if (driverId) {
+                        const newDriver = state.selectedDriver === driverId ? 'all' : driverId;
+                        d3.select("#driverSelect").property("value", newDriver).dispatch("change");
+                    }
+                });
+
             columns.forEach(c => tr.append("td").text(c.value(d)));
         });
     }
