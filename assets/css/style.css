@@ -23,13 +23,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-body.noscroll {
-    min-height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
+
 
 /* Navbar: Fixed height naturally */
 .navbar {
@@ -163,20 +157,7 @@ a:hover {
     align-items: center;
 }
 
-.chart-container {
-    background-color: var(--bg-card);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    /* Force minimum height to prevent collapse */
-    min-height: 250px;
-    flex: 1;
-    /* Ensure it grows if in a flex container */
-}
+
 
 .chart-header {
     display: flex;
@@ -236,6 +217,13 @@ select {
     background: var(--f1-red);
 }
 
+body.noscroll {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Dashboard V2 Layout - Flex Grow */
 .dashboard-grid-v2 {
     display: flex;
@@ -252,8 +240,8 @@ select {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 1rem;
-    flex: 6;
-    /* Takes 60% of available space */
+    flex: 55;
+    /* 55% height */
     min-height: 0;
     /* Important for grid/flex nesting */
 }
@@ -263,8 +251,8 @@ select {
     /* Changed to 2 columns for Analytics Charts */
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    flex: 0.8;
-    /* Approx 40-45% height */
+    flex: 45;
+    /* 45% height */
     min-height: 0;
     /* Important for grid/flex nesting */
 }
@@ -272,8 +260,16 @@ select {
 .chart-container {
     display: flex;
     flex-direction: column;
-    /* Restore a real height so D3 charts get dimensions */
-    min-height: 250px;
+    /* Use min-height: 0 to allow shrinking in flex */
+    min-height: 0;
+    flex: 1;
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    /* Slightly reduced padding */
+    position: relative;
+    overflow: hidden;
     height: 100%;
 }
 
@@ -289,11 +285,11 @@ select {
     /* For D3 absolute positioning if needed */
 }
 
-/* Ensure the analytics chart targets have measurable height for D3 */
+/* Ensure the analytics chart targets take available space */
 #trajectoryChart,
 #performanceMatrix {
-    flex: 1 1 auto;
-    min-height: 240px;
+    flex: 1;
+    min-height: 0;
 }
 
 /* Scrollable Lists Fix */
