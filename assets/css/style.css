@@ -24,8 +24,9 @@ body {
 }
 
 body.noscroll {
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
@@ -169,6 +170,12 @@ a:hover {
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Force minimum height to prevent collapse */
+    min-height: 250px;
+    flex: 1;
+    /* Ensure it grows if in a flex container */
 }
 
 .chart-header {
@@ -253,10 +260,11 @@ select {
 
 .bottom-section {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    /* Changed to 2 columns for Analytics Charts */
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    flex: 4;
-    /* Takes 40% of available space */
+    flex: 0.8;
+    /* Approx 40-45% height */
     min-height: 0;
     /* Important for grid/flex nesting */
 }
@@ -264,8 +272,9 @@ select {
 .chart-container {
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    /* Critical for scrollable children */
+    /* Restore a real height so D3 charts get dimensions */
+    min-height: 250px;
+    height: 100%;
 }
 
 /* Map adjustment */
@@ -278,6 +287,13 @@ select {
     background-color: var(--bg-card);
     position: relative;
     /* For D3 absolute positioning if needed */
+}
+
+/* Ensure the analytics chart targets have measurable height for D3 */
+#trajectoryChart,
+#performanceMatrix {
+    flex: 1 1 auto;
+    min-height: 240px;
 }
 
 /* Scrollable Lists Fix */

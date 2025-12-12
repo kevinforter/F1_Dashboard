@@ -155,8 +155,18 @@ function updateDashboard(yearChanged = false) {
 
     // Filter Races & Results for Year
     const racesOfYear = rawData.races.filter(r => parseInt(r.year) === year);
+    console.log("Races of Year:", racesOfYear.length, "Sample RaceId:", racesOfYear[0]?.raceId);
+    
     const raceIds = new Set(racesOfYear.map(r => r.raceId));
+    
+    // DEBUG: Check types
+    if (racesOfYear.length > 0) {
+        console.log("Type of raceId in Races:", typeof racesOfYear[0].raceId);
+        console.log("Type of raceId in Results (sample):", typeof rawData.results[0].raceId);
+    }
+
     let resultsOfYear = rawData.results.filter(r => raceIds.has(r.raceId));
+    console.log("Results of Year (Filtered):", resultsOfYear.length);
 
     // Update Dropdowns if needed
     if (yearChanged) {
@@ -165,30 +175,44 @@ function updateDashboard(yearChanged = false) {
     }
     
     // Filter by Circuit
+    let filteredResults = resultsOfYear;
     if (state.selectedCircuit !== 'all') {
         const circuitRaceIds = new Set(racesOfYear.filter(r => r.circuitId === state.selectedCircuit).map(r => r.raceId));
-        resultsOfYear = resultsOfYear.filter(r => circuitRaceIds.has(r.raceId));
-        // Also narrow down races for highlighting on map?
-        // drawWorldMap uses racesOfYear to plot dots. We can keep that to show context, just highlight selection.
+        filteredResults = resultsOfYear.filter(r => circuitRaceIds.has(r.raceId));
     }
 
     // Filter by Driver
-    let overviewResults = resultsOfYear; // For lists
-    if (state.selectedDriver !== 'all') {
-        overviewResults = resultsOfYear.filter(r => r.driverId === state.selectedDriver);
+    // For Analytics Charts, we usually want to see the "Season Context" for ALL drivers,
+    // and just HIGHLIGHT the selected driver.
+    // So we pass 'resultsOfYear' (Season Data) to charts, and 'state.selectedDriver' is used inside them for highlighting.
+    // We only filter if we had specific lists that needed to hide others.
+    
+    // 1. World Map (Context: Season)
+    try {
+        drawWorldMap(racesOfYear, state.selectedCircuit); 
+    } catch (e) {
+        console.error("Error drawing map:", e);
     }
 
-    const relevantRaceIds = new Set(overviewResults.map(r => r.raceId));
-    const pitsFiltered = rawData.pitStops ? rawData.pitStops.filter(p => relevantRaceIds.has(p.raceId) && (state.selectedDriver === 'all' || p.driverId === state.selectedDriver)) : []; 
-
-    // 1. World Map (Context: Season)
-    drawWorldMap(racesOfYear, state.selectedCircuit); 
-
     // 2. Driver Standings (Context: Season)
-    drawDriverStandings(year, racesOfYear, state.selectedDriver);
+    try {
+        drawDriverStandings(year, racesOfYear, state.selectedDriver);
+    } catch (e) {
+        console.error("Error drawing standings:", e);
+    }
 
-    // 3. Insight Lists (Analysis: Selection)
-    drawInsights(overviewResults, pitsFiltered);
+    // 3. Analytics Charts (Context: Season)
+    // Use setTimeout to ensure Grid/Flex layout has computed dimensions
+    setTimeout(() => {
+        try {
+            if (resultsOfYear.length === 0) {
+                console.warn("No results data available for analytics.");
+            }
+            drawAnalytics(year, racesOfYear, resultsOfYear);
+        } catch (e) {
+            console.error("Error drawing analytics:", e);
+        }
+    }, 0);
 }
 
 // --- VISUALIZATIONS ---
@@ -241,7 +265,6 @@ function drawWorldMap(races, selectedCircuitId) {
         .attr("stroke-width", 1)
         .style("cursor", "pointer")
         .on("click", (event, d) => {
-             // Optional: Allow clicking map to select circuit
              const newSelect = d.circuitId === state.selectedCircuit ? 'all' : d.circuitId;
              d3.select("#circuitSelect").property("value", newSelect).dispatch("change");
         })
@@ -282,8 +305,6 @@ function drawDriverStandings(year, races, selectedDriverId) {
             .style("font-weight", isSelected ? "bold" : "normal")
             .style("cursor", "pointer")
             .on("click", () => {
-                 // Toggle behavior? Or just select?
-                 // Let's just select. If already selected, maybe deselect?
                  const newDriver = state.selectedDriver === s.driverId ? 'all' : s.driverId;
                  d3.select("#driverSelect").property("value", newDriver).dispatch("change");
             });
@@ -300,123 +321,281 @@ function drawDriverStandings(year, races, selectedDriverId) {
     });
 }
 
-function drawInsights(results, pits) {
-    // 1. Top Overtakers (Grid - Pos)
-    // Aggregate by Driver across all races in year
-    const driverStats = new Map();
+function drawAnalytics(year, races, results) {
+    // Shared data prep
+    const sortedRaces = races.sort((a,b) => parseInt(a.round) - parseInt(b.round));
+    
+    drawTrajectory(sortedRaces, results);
+    drawPerformanceMatrix(sortedRaces, results);
+}
 
-    results.forEach(r => {
-        if (!driverStats.has(r.driverId)) {
-            driverStats.set(r.driverId, { 
-                id: r.driverId, 
-                gained: 0, 
-                lost: 0, 
-                crashes: 0, 
-                fastestLapCount: 0,
-                fastestLapSpeeds: [] 
-            });
-        }
-        const stats = driverStats.get(r.driverId);
+function drawTrajectory(races, results) {
+    console.log("drawTrajectory called", { racesCount: races.length, resultsCount: results.length });
+    const container = d3.select("#trajectoryChart");
+    container.html("");
+    
+    const margin = {top: 20, right: 30, bottom: 30, left: 40};
+    const rect = container.node().getBoundingClientRect();
+    console.log("Trajectory Container Rect:", rect);
+    
+    const width = rect.width - margin.left - margin.right;
+    const height = rect.height - margin.top - margin.bottom;
+    
+    if (width <= 0 || height <= 0) {
+        console.warn("Chart container too small", width, height);
+        return;
+    }
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Data Processing: Cumulative Points
+    const driverPoints = new Map(); // driverId -> [{round, points}]
+    
+    // Sort results by race round
+    // Need a quick lookup for race round
+    const raceRoundMap = new Map();
+    races.forEach(r => raceRoundMap.set(r.raceId, parseInt(r.round)));
+    
+    // Group results per driver
+    const driverResults = d3.group(results, d => d.driverId);
+    
+    const rounds = races.map(r => parseInt(r.round)).sort((a,b) => a-b);
+    const maxRound = d3.max(rounds);
+    
+    const dataset = [];
+
+    for (const [driverId, feats] of driverResults) {
+        let currentPoints = 0;
+        const pointsHistory = [];
         
-        // Overtakes / Lost
-        const grid = parseInt(r.grid);
-        const pos = parseInt(r.positionOrder);
+        // Ensure we have data for every round (cumulative)
+        // Sort driver feats by round
+        const drSorted = feats.sort((a,b) => raceRoundMap.get(a.raceId) - raceRoundMap.get(b.raceId));
         
-        if (grid > 0) { // Only count if valid grid
-            const diff = grid - pos;
-            if (diff > 0) stats.gained += diff;
-            if (diff < 0) stats.lost += Math.abs(diff);
-        }
-
-        // Crashes (Status 3, 4, maybe others? 'Collision', 'Accident', 'Spun off')
-        // Status ID 3=Accident, 4=Collision, 20=Spun off, 104=Fatal accident
-        const crashIds = ["3", "4", "20", "104"]; 
-        // Simple check
-        if (crashIds.includes(r.statusId)) {
-            stats.crashes++;
-        }
-
-        // Fastest Lap
-        if (r.rank === "1") {
-            stats.fastestLapCount++;
-        }
-        // Speed for raw comparison? 
-        // Actually, "Fastest Laps" list requested...
-        // Maybe list of TOP SPEED races? Or Driver with MOST fastest laps?
-        // Let's do "Most Fastest Laps" or "Fastest Lap of Season"
-        // Let's list individual fastest laps for the season (Top 10 Fastest Laps by avg speed)
-    });
-
-    const statsArray = Array.from(driverStats.values());
-
-    // --- Helper to draw simple list ---
-    function drawSimpleList(selector, data, columns) {
-        const div = d3.select(selector);
-        div.html("");
-        const table = div.append("table").attr("class", "f1-table");
+        let featParams = 0;
         
-        // Header
-        const thead = table.append("thead").append("tr");
-        columns.forEach(c => thead.append("th").text(c.label));
+        rounds.forEach(rnd => {
+            // Find result for this round
+            const res = drSorted.find(r => raceRoundMap.get(r.raceId) === rnd);
+            if (res) {
+                currentPoints += parseFloat(res.points);
+            }
+            pointsHistory.push({ round: rnd, points: currentPoints });
+        });
         
-        const tbody = table.append("tbody");
-        data.forEach(d => {
-            const driverId = d.id || d.driverId; // Handle both key types
-            const isSelected = state.selectedDriver === driverId;
-            
-            const tr = tbody.append("tr")
-                .style("background-color", isSelected ? "rgba(56, 125, 255, 0.2)" : null)
-                .style("cursor", "pointer")
-                .on("click", () => {
-                    if (driverId) {
-                        const newDriver = state.selectedDriver === driverId ? 'all' : driverId;
-                        d3.select("#driverSelect").property("value", newDriver).dispatch("change");
-                    }
-                });
-
-            columns.forEach(c => tr.append("td").text(c.value(d)));
+        dataset.push({
+            driverId: driverId,
+            driverName: rawData.driverMap.get(driverId).code,
+            history: pointsHistory,
+            total: currentPoints
         });
     }
 
-    // List 1: Top Overtakers
-    const topOvertakers = [...statsArray].sort((a,b) => b.gained - a.gained).slice(0, 10);
-    drawSimpleList("#listOvertakers", topOvertakers, [
-        { label: "Driver", value: d => rawData.driverMap.get(d.id).surname },
-        { label: "Pos Gained", value: d => d.gained }
-    ]);
+    // Filter: Top 5 + Selected
+    const topDrivers = dataset.sort((a,b) => b.total - a.total).slice(0, 5);
+    const topIds = new Set(topDrivers.map(d => d.driverId));
+    
+    // Always include selected driver if they exist
+    if (state.selectedDriver !== 'all' && !topIds.has(state.selectedDriver)) {
+        const selectedD = dataset.find(d => d.driverId === state.selectedDriver);
+        if (selectedD) topDrivers.push(selectedD);
+    }
 
-    // List 2: Fastest Laps (Individual, Top Speed)
-    // Need to parse speeds from results where rank=1
-    const fastLaps = results
-        .filter(r => r.fastestLapSpeed && r.fastestLapSpeed !== "\\N")
-        .map(r => ({
-            driverId: r.driverId,
-            raceId: r.raceId,
-            speed: parseFloat(r.fastestLapSpeed),
-            time: r.fastestLapTime
-        }))
-        .sort((a,b) => b.speed - a.speed)
-        .slice(0, 10);
+    // Scales
+    const x = d3.scaleLinear()
+        .domain([1, maxRound])
+        .range([0, width]);
+        
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(topDrivers, d => d.total)])
+        .range([height, 0]);
 
-    drawSimpleList("#listFastestLap", fastLaps, [
-        { label: "Driver", value: d => rawData.driverMap.get(d.driverId).code },
-        { label: "Race", value: d => rawData.raceMap.get(d.raceId).name.replace(" Grand Prix", "") },
-        { label: "Speed (km/h)", value: d => d.speed }
-    ]);
+    // Axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(maxRound).tickFormat(d3.format("d")))
+        .style("color", "#666");
 
-    // List 3: Most Crashes (Moved up)
-    const topCrashes = [...statsArray].sort((a,b) => b.crashes - a.crashes).slice(0, 10);
-     drawSimpleList("#listCrashes", topCrashes, [
-        { label: "Driver", value: d => rawData.driverMap.get(d.id).surname },
-        { label: "Crashes", value: d => d.crashes }
-    ]);
+    svg.append("g")
+        .call(d3.axisLeft(y).ticks(5))
+        .style("color", "#666");
 
-    // List 5: Positions Lost
-    const topLost = [...statsArray].sort((a,b) => b.lost - a.lost).slice(0, 10);
-    drawSimpleList("#listPositionsLost", topLost, [
-        { label: "Driver", value: d => rawData.driverMap.get(d.id).surname },
-        { label: "Pos Lost", value: d => d.lost }
-    ]);
+    // Gridlines (Y)
+    svg.append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(""))
+        .style("stroke-opacity", 0.1);
+
+    // Line Generator
+    const line = d3.line()
+        .x(d => x(d.round))
+        .y(d => y(d.points))
+        .curve(d3.curveMonotoneX);
+
+    // Draw Lines
+    svg.selectAll(".line")
+        .data(topDrivers)
+        .enter()
+        .append("path")
+        .attr("class", "line")
+        .attr("fill", "none")
+        .attr("stroke", d => d.driverId === state.selectedDriver ? "#387DFF" : (topIds.has(d.driverId) ? "var(--text-secondary)" : "#444")) // Blue for selected, grey for others
+        .attr("stroke-width", d => d.driverId === state.selectedDriver ? 3 : 1.5)
+        .attr("stroke-opacity", d => d.driverId === state.selectedDriver ? 1 : 0.6)
+        .attr("d", d => line(d.history));
+
+    // Draw Dots for every point (shows even if only 1 race)
+     svg.selectAll(".dot-group")
+        .data(topDrivers)
+        .enter()
+        .append("g")
+        .attr("class", "dot-group")
+        .selectAll(".point-dot")
+        .data(d => d.history.map(h => ({...h, driverId: d.driverId}))) // Pass driverId
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(d.round))
+        .attr("cy", d => y(d.points))
+        .attr("r", 3)
+        .attr("fill", d => d.driverId === state.selectedDriver ? "#387DFF" : "#444")
+        .attr("opacity", d => d.driverId === state.selectedDriver ? 1 : 0); // Only show dots for selected driver (or all if we want, but clutter)
+
+    // Labels at end of line
+    svg.selectAll(".label")
+        .data(topDrivers)
+        .enter()
+        .append("text")
+        .attr("x", width + 5)
+        .attr("y", d => y(d.total))
+        .attr("dy", "0.3em")
+        .style("fill", d => d.driverId === state.selectedDriver ? "#387DFF" : "#888")
+        .style("font-size", "10px")
+        .text(d => d.driverName);
+}
+
+function drawPerformanceMatrix(races, results) {
+    console.log("drawPerformanceMatrix called", { racesCount: races.length, resultsCount: results.length });
+    const container = d3.select("#performanceMatrix");
+    container.html("");
+    
+    const margin = {top: 20, right: 20, bottom: 40, left: 40};
+    const rect = container.node().getBoundingClientRect();
+    console.log("Matrix Container Rect:", rect);
+
+    const width = rect.width - margin.left - margin.right;
+    const height = rect.height - margin.top - margin.bottom;
+    
+    if (width <= 0 || height <= 0) return;
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Data Processing: Avg Start vs Avg Finish
+    
+    const driverStats = d3.rollups(results, v => {
+        const validGrid = v.filter(d => parseInt(d.grid) > 0);
+        const validPos = v.filter(d => parseInt(d.positionOrder) > 0);
+        
+        return {
+            avgGrid: d3.mean(validGrid, d => parseInt(d.grid)) || 20,
+            avgFinish: d3.mean(validPos, d => parseInt(d.positionOrder)) || 20,
+            count: v.length,
+            driverId: v[0].driverId
+        };
+    }, d => d.driverId)
+    .map(d => d[1])
+    .filter(d => d.count >= 1); // Show even if just 1 race!
+
+    // Scales (Reverse! 1 is good, 20 is bad)
+    const x = d3.scaleLinear()
+        .domain([20, 1])
+        .range([0, width]);
+        
+    const y = d3.scaleLinear()
+        .domain([20, 1])
+        .range([height, 0]);
+
+    // Diagonal Reference Line (Expected Performance: Start = Finish)
+    svg.append("line")
+        .attr("x1", x(20))
+        .attr("y1", y(20))
+        .attr("x2", x(1))
+        .attr("y2", y(1))
+        .attr("stroke", "#444")
+        .attr("stroke-dasharray", "4")
+        .attr("opacity", 0.5);
+
+    svg.append("text")
+        .attr("x", x(10))
+        .attr("y", y(10))
+        .attr("dy", -5)
+        .attr("text-anchor", "middle")
+        .attr("transform", `rotate(-45, ${x(10)}, ${y(10)})`)
+        .style("fill", "#555")
+        .style("font-size", "10px")
+        .text("Expected Performance");
+
+    // Axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .style("color", "#666");
+    
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 35)
+        .style("text-anchor", "middle")
+        .style("fill", "#888")
+        .style("font-size", "10px")
+        .text("Avg Starting Position (Grid)");
+
+    svg.append("g")
+        .call(d3.axisLeft(y))
+        .style("color", "#666");
+        
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -30)
+        .style("text-anchor", "middle")
+        .style("fill", "#888")
+        .style("font-size", "10px")
+        .text("Avg Finishing Position");
+
+    // Scatter Dots
+    svg.selectAll(".dot")
+        .data(driverStats)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", d => x(d.avgGrid))
+        .attr("cy", d => y(d.avgFinish))
+        .attr("r", d => d.driverId === state.selectedDriver ? 8 : 5)
+        .attr("fill", d => d.driverId === state.selectedDriver ? "#387DFF" : (d.avgFinish < d.avgGrid ? "#00D2BE" : "#E10600")) // Green if gained, Red if lost
+        .attr("opacity", d => d.driverId === state.selectedDriver ? 1 : 0.7)
+        .attr("stroke", "#fff")
+        .attr("stroke-width", d => d.driverId === state.selectedDriver ? 2 : 0)
+        .style("cursor", "pointer")
+        .on("click", (e, d) => {
+             const newDriver = state.selectedDriver === d.driverId ? 'all' : d.driverId;
+             d3.select("#driverSelect").property("value", newDriver).dispatch("change");
+        })
+        .on("mouseover", (e, d) => {
+            const driver = rawData.driverMap.get(d.driverId);
+            showTooltip(e, `
+                <strong>${driver.forename} ${driver.surname}</strong><br>
+                Avg Grid: ${d.avgGrid.toFixed(1)}<br>
+                Avg Finish: ${d.avgFinish.toFixed(1)}
+            `);
+        })
+        .on("mouseout", hideTooltip);
 }
 
 // Tooltip Helpers

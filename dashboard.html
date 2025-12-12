@@ -79,38 +79,24 @@
                 </div>
             </div>
 
-            <!-- Bottom Section: Insight Lists -->
+            <!-- Bottom Section: Analytics Charts -->
             <div class="bottom-section">
-                <!-- List 1: Overtakers -->
-                <div class="chart-container list-card">
+                <!-- Chart 1: Championship Trajectory -->
+                <div class="chart-container">
                     <div class="chart-header">
-                        <h4>Top Overtakers</h4>
+                        <h4>Championship Trajectory</h4>
+                        <span class="info-icon" title="Cumulative points progression throughout the season.">ⓘ</span>
                     </div>
-                    <div id="listOvertakers" class="insight-list"></div>
+                    <div id="trajectoryChart" style="flex-grow: 1; min-height: 0;"></div>
                 </div>
 
-                <!-- List 2: Fastest Lap -->
-                <div class="chart-container list-card">
+                <!-- Chart 2: Performance Matrix -->
+                <div class="chart-container">
                     <div class="chart-header">
-                        <h4>Fastest Laps</h4>
+                        <h4>Performance Matrix</h4>
+                        <span class="info-icon" title="Avg Start vs Avg Finish Position. Above diagonal = Overtaker.">ⓘ</span>
                     </div>
-                    <div id="listFastestLap" class="insight-list"></div>
-                </div>
-
-                <!-- List 3: Most Crashes -->
-                <div class="chart-container list-card">
-                    <div class="chart-header">
-                        <h4>Most Crashes</h4>
-                    </div>
-                    <div id="listCrashes" class="insight-list"></div>
-                </div>
-
-                <!-- List 4: Positions Lost -->
-                <div class="chart-container list-card">
-                    <div class="chart-header">
-                        <h4>Positions Lost</h4>
-                    </div>
-                    <div id="listPositionsLost" class="insight-list"></div>
+                    <div id="performanceMatrix" style="flex-grow: 1; min-height: 0;"></div>
                 </div>
             </div>
 
