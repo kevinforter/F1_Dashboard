@@ -527,16 +527,18 @@ function drawPerformanceMatrix(races, results) {
         .attr("y1", y(20))
         .attr("x2", x(1))
         .attr("y2", y(1))
-        .attr("stroke", "#444")
-        .attr("stroke-dasharray", "4")
-        .attr("opacity", 0.5);
+        .attr("stroke", "#999") // Much lighter
+        .attr("stroke-width", 1.5)
+        .attr("stroke-dasharray", "5,5") // Distinct dash
+        .attr("opacity", 0.8);
 
     svg.append("text")
         .attr("x", x(20))
         .attr("y", y(1) - 10)
         .attr("text-anchor", "start")
-        .style("fill", "#555")
-        .style("font-size", "10px")
+        .style("fill", "#999") // Lighter color for visibility on dark theme
+        .style("font-size", "11px")
+        .style("font-weight", "bold")
         .text("- - - Expected Performance");
 
     // Axes
