@@ -533,7 +533,7 @@ function drawPerformanceMatrix(races, results) {
 
     svg.append("text")
         .attr("x", x(20))
-        .attr("y", y(1) - 5)
+        .attr("y", y(1) - 10)
         .attr("text-anchor", "start")
         .style("fill", "#555")
         .style("font-size", "10px")
