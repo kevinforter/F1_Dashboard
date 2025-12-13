@@ -82,7 +82,7 @@ function setupControls() {
 
     // Get available years from races
     const years = Array.from(new Set(rawData.races.map(r => parseInt(r.year))))
-        .filter(y => y >= 2010 && y <= 2023) // Ensure constraint
+        .filter(y => y >= 2010 && y <= 2025) // Ensure constraint
         .sort((a,b) => b-a);
     
     years.forEach(y => {
