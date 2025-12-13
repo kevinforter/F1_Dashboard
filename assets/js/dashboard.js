@@ -109,6 +109,22 @@ function setupControls() {
         d3.select("#driverSelect").property("value", "all");
         updateDashboard();
     });
+
+    // Setup Info Icon Tooltips
+    d3.selectAll(".info-icon").each(function() {
+        const icon = d3.select(this);
+        const titleText = icon.attr("title");
+        
+        if (titleText) {
+            icon.attr("data-title", titleText) // Backup content
+                .attr("title", null) // Remove native tooltip
+                .style("cursor", "help")
+                .on("mouseover", (e) => {
+                    showTooltip(e, titleText);
+                })
+                .on("mouseout", hideTooltip);
+        }
+    });
 }
 
 function updateCircuitDropdown(races) {
