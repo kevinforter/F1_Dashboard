@@ -92,6 +92,13 @@ a:hover {
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.9rem;
+    border-bottom: 2px solid transparent;
+    /* Prevent layout shift */
+    transition: border-color 0.2s;
+}
+
+.nav-links a:hover {
+    border-bottom-color: var(--text-primary);
 }
 
 .nav-links a.active {
