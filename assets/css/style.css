@@ -53,19 +53,32 @@ a:hover {
 
 /* Navbar */
 .navbar {
-    background-color: var(--bg-card);
-    border-bottom: 4px solid var(--f1-red);
-    padding: 1rem 2rem;
+    padding: 1rem 2rem 0rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Space between logo and text */
+}
+
+.f1-logo {
+    height: 32px;
+    /* Fit navbar */
+    width: auto;
+}
+
+.logo-text {
     font-size: 1.5rem;
     font-weight: 900;
     font-style: italic;
     color: var(--text-primary);
+    line-height: 1;
+    /* Align better with image */
 }
 
 .nav-links {
@@ -75,7 +88,7 @@ a:hover {
 }
 
 .nav-links a {
-    color: var(--text-secondary);
+    color: var(--text-primary);
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.9rem;
