@@ -264,20 +264,20 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
         .attr("d", path);
 
     // Draw Circuits
-    // Filter by Driver Points if specific driver selected
-    let racesToShow = races;
+    // Strategy: Always show ALL races for geographical context.
+    // If a driver is selected, highlight where they scored points vs where they didn't.
+    
+    // Identify which races the driver scored in
+    const scoringRaceIds = new Set();
     if (selectedDriverId !== 'all') {
-         const driverPointsRaces = new Set(
-             results.filter(r => r.driverId === selectedDriverId && parseFloat(r.points) > 0)
-                    .map(r => r.raceId)
-         );
-         racesToShow = races.filter(r => driverPointsRaces.has(r.raceId));
+         results.filter(r => r.driverId === selectedDriverId && parseFloat(r.points) > 0)
+                .forEach(r => scoringRaceIds.add(r.raceId));
     }
 
-    // Filter unique circuits for this year from the allowed races
-    const circuits = Array.from(new Set(racesToShow.map(r => r.circuitId)))
+    // Filter unique circuits for this year
+    const circuits = Array.from(new Set(races.map(r => r.circuitId)))
         .map(id => rawData.circuitMap.get(id))
-        .filter(c => c); // Ensure exists
+        .filter(c => c);
 
     svg.append("g")
         .selectAll("circle")
@@ -286,9 +286,30 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
         .attr("class", "circuit-point")
         .attr("cx", d => projection([d.lng, d.lat])[0])
         .attr("cy", d => projection([d.lng, d.lat])[1])
-        .attr("r", d => d.circuitId === selectedCircuitId ? 8 : 4) // Larger if selected
-        .attr("fill", d => d.circuitId === selectedCircuitId ? "#387DFF" : "var(--f1-red)") // Blue if selected
-        .attr("opacity", d => (selectedCircuitId === 'all' || d.circuitId === selectedCircuitId) ? 1 : 0.3) // Dim others
+        .attr("r", d => d.circuitId === selectedCircuitId ? 8 : 4)
+        .attr("fill", d => {
+            if (d.circuitId === selectedCircuitId) return "#387DFF"; // Selected Circuit
+            if (selectedDriverId === 'all') return "var(--f1-red)"; // Default
+            
+            // Driver Context
+            const race = races.find(r => r.circuitId === d.circuitId);
+            if (race && scoringRaceIds.has(race.raceId)) {
+                return "var(--f1-red)"; // Scored
+            }
+            return "#444"; // Didn't Score (Grey)
+        })
+        .attr("opacity", d => {
+            if (d.circuitId === selectedCircuitId) return 1;
+            if (selectedCircuitId !== 'all') return 0.3; // Dim others if circuit selected
+            
+            // Driver Context: Keep Scored bright, dim non-scored slightly
+            if (selectedDriverId !== 'all') {
+                const race = races.find(r => r.circuitId === d.circuitId);
+                if (race && scoringRaceIds.has(race.raceId)) return 1;
+                return 0.5;
+            }
+            return 1;
+        })
         .attr("stroke", "#fff")
         .attr("stroke-width", 1)
         .style("cursor", "pointer")
@@ -304,11 +325,13 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
                 if (race) {
                     const res = results.find(r => r.raceId === race.raceId && r.driverId === selectedDriverId);
                     if (res) {
+                        const scored = parseFloat(res.points) > 0;
+                        const statusColor = scored ? "#00D2BE" : "#E10600"; // Green/Red indicator text
+                        
                         content += `<div style="margin-top: 5px; border-top: 1px solid #555; paddingTop: 5px;">
                             <strong>${rawData.driverMap.get(selectedDriverId).code} Result:</strong><br>
                             Position: <span style="color:#fff">${res.positionOrder}</span><br>
-                            Points: <span style="color:#00D2BE">${res.points}</span><br>
-                            Fastest Lap: <span style="color:#fff">${res.fastestLapTime || 'N/A'}</span>
+                            Points: <span style="color:${statusColor}">${res.points}</span><br>
                         </div>`;
                     }
                 }
@@ -316,6 +339,35 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
             showTooltip(event, content);
         })
         .on("mouseout", hideTooltip);
+
+    // Legend
+    const legend = svg.append("g")
+        .attr("transform", `translate(20, ${height - 20})`);
+
+    legend.append("circle").attr("r", 4).attr("fill", "var(--f1-red)").attr("stroke", "#fff");
+    
+    // Dynamic Legend Text
+    let legendText = "Grand Prix Location";
+    if (selectedDriverId !== 'all') {
+        legendText = "Points Scored";
+        
+        // Add "No Points" entry
+        legend.append("circle")
+            .attr("r", 4)
+            .attr("cx", 0)
+            .attr("cy", -15)
+            .attr("fill", "#444")
+            .attr("stroke", "#fff")
+            .attr("opacity", 0.5); // Match map opacity
+        legend.append("text").attr("x", 10).attr("y", -11).text("No Points").style("font-size", "12px").style("fill", "var(--text-secondary)");
+    }
+
+    legend.append("text")
+        .attr("x", 10)
+        .attr("y", 4)
+        .text(legendText)
+        .style("font-size", "12px")
+        .style("fill", "var(--text-secondary)");
 }
 
 function drawDriverStandings(year, races, selectedDriverId, selectedCircuitId) {
