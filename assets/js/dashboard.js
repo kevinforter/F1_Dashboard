@@ -306,7 +306,7 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
             if (selectedDriverId !== 'all') {
                 const race = races.find(r => r.circuitId === d.circuitId);
                 if (race && scoringRaceIds.has(race.raceId)) return 1;
-                return 0.5;
+                return 0.2; // Very faint for no-points
             }
             return 1;
         })
@@ -358,7 +358,8 @@ function drawWorldMap(races, results, selectedDriverId, selectedCircuitId) {
             .attr("cy", -15)
             .attr("fill", "#444")
             .attr("stroke", "#fff")
-            .attr("opacity", 0.5); // Match map opacity
+            .attr("stroke", "#fff")
+            .attr("opacity", 0.2); // Match map opacity
         legend.append("text").attr("x", 10).attr("y", -11).text("No Points").style("font-size", "12px").style("fill", "var(--text-secondary)");
     }
 
