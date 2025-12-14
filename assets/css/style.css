@@ -158,15 +158,20 @@ a:hover {
 }
 
 .btn-outline {
-    background-color: transparent;
+    background-color: var(--f1-red);
     border: 1px solid var(--f1-red);
-    color: var(--f1-red);
+    color: white;
     transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    /* Match select padding height */
+    border-radius: 100px;
+    /* Pill shape */
 }
 
 .btn-outline:hover {
-    background-color: var(--f1-red);
-    color: white;
+    background-color: #b30000;
+    /* Darker red */
+    border-color: #b30000;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(225, 6, 0, 0.4);
 }
@@ -183,7 +188,7 @@ a:hover {
 .controls {
     grid-column: 1 / -1;
     background-color: var(--bg-card);
-    padding: 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     display: flex;

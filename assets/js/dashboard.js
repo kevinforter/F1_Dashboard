@@ -73,12 +73,8 @@ function setupControls() {
         .text("SEASON: ");
     
     const yearSelect = d3.create("select")
-        .attr("id", "yearSelect")
-        .style("background", "var(--bg-dark)")
-        .style("color", "var(--text-primary)")
-        .style("border", "1px solid var(--border-color)")
-        .style("padding", "0.5rem")
-        .style("border-radius", "4px");
+        .attr("id", "yearSelect");
+        // Styles are now handled by CSS 'select' rule
 
     // Get available years from races
     const years = Array.from(new Set(rawData.races.map(r => parseInt(r.year))))
