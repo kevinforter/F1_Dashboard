@@ -122,6 +122,36 @@
                 </ul>
             </div>
 
+            <div class="data-card" style="margin-top: 3rem;">
+                <h2 style="border-left: 3px solid var(--f1-red); padding-left: 10px;">Research Findings</h2>
+                <p style="color: var(--text-secondary); margin-top: 1rem;">
+                    Our interactive analysis of the dataset revealed several key insights regarding the sport's dynamics:
+                </p>
+
+                <ul style="margin-top: 1.5rem; list-style: none; padding: 0;">
+                    <li style="margin-bottom: 1.5rem;">
+                        <strong style="color: var(--text-primary); display: block; margin-bottom: 0.5rem;">1. The "Pole Position" Advantage</strong>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                            Analysis of <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px;">results.csv</code> highlights a strong correlation between starting on the front row (Grid 1-2) and race wins. This finding validates our design choice to include the "Performance Matrix", which explicitly visualizes the delta between Qualifying (Grid) and Race (Position Order) results.
+                        </p>
+                    </li>
+
+                    <li style="margin-bottom: 1.5rem;">
+                        <strong style="color: var(--text-primary); display: block; margin-bottom: 0.5rem;">2. Circuit-Dependent Overtaking</strong>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                            By filtering `results.csv` data against specific IDs in <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px;">circuits.csv</code>, we observed that street circuits (e.g., Monaco) show significantly lower variance between start and finish positions compared to purpose-built tracks (e.g., Spa, Silverstone). This confirms the "processional" nature often criticized by fans for specific tracks.
+                        </p>
+                    </li>
+
+                    <li style="margin-bottom: 1.5rem;">
+                        <strong style="color: var(--text-primary); display: block; margin-bottom: 0.5rem;">3. Consistency vs. Peak Performance</strong>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                            Longitudinal analysis of the `driver_standings.csv` reveals that championships in the hybrid era (2014+) are won by consistency (high average finish) rather than just peak win rate. Drivers with fewer DNF (Did Not Finish) statuses often outperform faster but less reliable rivals over a full season.
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
         </section>
 
         <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
