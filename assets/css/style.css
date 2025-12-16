@@ -110,8 +110,8 @@ a:hover {
 /* Updated for 100vh Dashboard */
 /* Main wrapper to control height explicitly for Home Page logic */
 .container-wrapper {
-    /* Height: 100vh - Navbar(~55px) - Margins(2rem: 1rem top + 1rem bottom) */
-    height: calc(100vh - 55px - 2rem);
+    /* Height: 100vh - Navbar (32px logo + 1rem padding = ~48px) - Margins (2rem total) */
+    height: calc(100vh - 48px - 2rem);
     width: calc(100% - 4rem);
     /* Logic: 100% - left/right padding (2rem each) */
     margin: 1rem auto;
