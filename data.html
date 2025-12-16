@@ -32,7 +32,7 @@
                 <h2>Data Source</h2>
                 <p style="margin-bottom: 1rem; color: var(--text-secondary);">
                     The data for this project is sourced from the comprehensive 
-                    <a href="https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020" target="_blank" style="color: var(--f1-red);">Formula 1 World Championship (1950 - 2025)</a> 
+                    <a href="https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020" target="_blank" style="color: var(--f1-red);">Formula 1 World Championship (1950 - 2024)</a> 
                     dataset on Kaggle (maintained by Rohan Rao).
                 </p>
                 <br>
@@ -145,29 +145,41 @@
         <section>
             <h1>Design Choices</h1>
             <div style="margin-top: 2rem;" class="design-section">
-                <h3>Foundations of Visual Design</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    We utilized a dark theme to match the premium, technological aesthetic of Formula 1. 
-                    The color palette relies on high contrast (White on Dark Grey) for readability, 
-                    with F1 Red used sparingly to guide attention to interactive elements and key headings.
+                
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">Foundations of Visual Design</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    The visual design is grounded in a 'Dark Mode' aesthetic, mirroring the telemetry screens used by F1 engineers and the sleek branding of the sport. We utilize a high-contrast palette—backgroundColor '#15151e' with '#f0f0f0' text—to minimize eye strain during analysis. The signature 'F1 Red' is reserved strictly for call-to-action elements (buttons, active links) and critical highlighting, creating a clear visual hierarchy. Typography combines 'Titillium Web' for headers (adding a mechanical, technical feel) with 'Inter' for data readability. A strict grid system ensures component alignment, providing a sense of stability and order essential for complex dashboards.
                 </p>
 
-                <h3>Data-Ink Ratio</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    The dashboard minimizes non-data ink. Grid lines are faint or removed. 
-                    The heatmap uses color intensity to convey density without needing explicit numbers in every cell (details on demand).
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">Analytical Design Principles (Tufte)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Following Edward Tufte’s principles, the dashboard prioritizes 'Comparisons' and 'Multivariate Analysis'. The Performance Matrix forces a direct comparison between starting grid position and finishing position for multiple drivers simultaneously, revealing efficiency at a glance. We respect 'Integration of Evidence' by placing geographical data (Map) alongside temporal data (Trajectory) and statistical summaries (Table). The layout encourages causal reasoning: users can select a specific circuit to see how individual race results contributed to the overall championship trajectory, linking local race events to global season trends.
                 </p>
-                
-                <h3>Human Perception</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    We use position (Bar Chart) and Color Saturation (Heatmap) which are strong pre-attentive attributes. 
-                    The "Grid Position" (Cause) is placed on the X-axis and "Result" (Effect) on the Y-axis, following standard convention.
+
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">Data-Ink Ratio</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    We rigorously maximized the Data-Ink Ratio by stripping away non-essential decorative elements. Chart backgrounds are transparent or match the card color; borders are minimal. In the Championship Trajectory, grid lines are faint and dashed, serving only as necessary guides without competing with the data lines. Data points are rendered as simple geometries. Instead of permanently displaying values that would clutter the view, we utilize 'Details on Demand' via tooltips. Color is never used gratuitously; it always encodes meaning, such as the Green/Red divergence in the matrix to signify positions gained or lost relative to the grid.
+                </p>
+
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">Human Perception</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    The design leverages pre-attentive attributes to speed up cognition. 'Color' is used to instantly distinguish positive performance (Green) from negative (Red) in the scatter plot, allowing users to spot over-performers before reading any text. We apply Gestalt principles of 'Proximity' to group related controls (year/driver/circuit selectors) and 'Similarity' to ensure interactive elements look consistent. Object Constancy is maintained through smooth D3.js transitions; when a user filters data, elements animate to their new positions rather than vanishing, helping the user track the data's evolution across simple state changes.
+                </p>
+
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">Tasks in Data Visualization</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    The dashboard supports the core interaction mantra: "Overview first, zoom and filter, details on demand". Initially, the user sees the macroscopic view of the entire season. The 'Filter' task is supported by the global dropdowns, allowing users to drill down into a specific driver's season or a specific circuit's impact. 'Identify' tasks are facilitated by the clear labeling of top drivers, while 'Compare' tasks are inherent in the multi-line trajectory chart. The 'Derive' task is enabled by the Performance Matrix, allowing users to generate new insights about driver consistency that aren't visible in raw tables.
+                </p>
+
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">Interaction Concept</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Our interaction model is built on 'Linked Views' (Brushing and Linking). The application state is centralized; selecting a driver in the dropdown triggers a synchronized update across all visualizations—highlighting their line in the trajectory, isolating their dot in the matrix, and filtering the map. This connectivity ensures the user never loses context. We use 'Hover' states as lightweight interactions for exploration (tooltips), while 'Click' events trigger persistent filtering. The immediate visual feedback loop (under 100ms) ensures the system feels responsive and encourages exploratory data analysis.
                 </p>
             </div>
-        </section>
+
 
         <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
-            <p>Created by Kevin Forter & Team. Course: Information Visualization.</p>
+            <p>Created by Catharina and Yasna. Course: DAVI.</p>
         </footer>
     </div>
 
