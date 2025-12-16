@@ -19,25 +19,22 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadData() {
     try {
         console.log("Loading data...");
-        const [races, results, drivers, circuits, driverStandings, pitStops, statusData, worldGeo] = await Promise.all([
+        const [races, results, drivers, circuits, driverStandings, worldGeo] = await Promise.all([
             d3.csv('assets/data/races.csv'),
             d3.csv('assets/data/results.csv'),
             d3.csv('assets/data/drivers.csv'),
             d3.csv('assets/data/circuits.csv'),
             d3.csv('assets/data/driver_standings.csv'),
-            d3.csv('assets/data/pit_stops.csv'),
-            d3.csv('assets/data/status.csv'),
             d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
         ]);
 
-        rawData = { races, results, drivers, circuits, driverStandings, pitStops, statusData, worldGeo };
+        rawData = { races, results, drivers, circuits, driverStandings, worldGeo };
         console.log("Data loaded:", rawData);
 
         // Pre-process core lookups
         rawData.raceMap = new Map(races.map(r => [r.raceId, r]));
         rawData.driverMap = new Map(drivers.map(d => [d.driverId, d]));
         rawData.circuitMap = new Map(circuits.map(c => [c.circuitId, c]));
-        rawData.statusMap = new Map(statusData.map(s => [s.statusId, s.status]));
 
         setupControls();
         updateDashboard(true);
