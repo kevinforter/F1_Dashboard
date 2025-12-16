@@ -134,10 +134,10 @@ a:hover {
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    /* Center content vertically */
+    justify-content: space-between;
+    /* Push header to top, cards to bottom */
     padding: 2rem;
-    /* 2rem padding from sides */
+    /* Ensure exactly 2rem gap at edges */
     border-radius: 1rem;
     /* Ensure radius matches */
 }
