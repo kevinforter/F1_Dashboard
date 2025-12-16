@@ -30,6 +30,13 @@
 
     <div class="container">
         
+        <header style="margin-bottom: 3rem;">
+            <h1>Data & Design Decisions</h1>
+            <p style="color: var(--text-secondary); max-width: 800px; line-height: 1.6;">
+                Transparency is key to trust in analytics. Below is a detailed breakdown of our datasets and the design principles guiding their visualization.
+            </p>
+        </header>
+
         <section class="data-content" style="margin-bottom: 4rem;">
             <div class="data-card">
                 <h2>Data Source</h2>
@@ -39,7 +46,7 @@
                     dataset on Kaggle (maintained by Rohan Rao).
                 </p>
                 <br>
-                <h3>Scope & Filtering</h3>
+                <h3 style="margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px; color: var(--text-primary);">Scope & Filtering</h3>
                 <p style="margin-bottom: 1rem; color: var(--text-secondary);">
                     While the original dataset covers the history of F1 from 1950, this dashboard focuses exclusively on the modern era: 
                     <strong>2010 to Present</strong>.
@@ -61,7 +68,7 @@
                 <div class="dataset-list">
                     <!-- Races -->
                     <div class="dataset-item" style="margin-bottom: 2rem;">
-                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">races.csv</h3>
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">races.csv</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">Contains the schedule and information for every Grand Prix.</p>
                         <table class="data-table">
                             <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
@@ -78,7 +85,7 @@
 
                     <!-- Results -->
                     <div class="dataset-item" style="margin-bottom: 2rem;">
-                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">results.csv</h3>
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">results.csv</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">The core dataset containing race results for every driver in every race.</p>
                         <table class="data-table">
                             <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
@@ -96,7 +103,7 @@
 
                     <!-- Drivers -->
                     <div class="dataset-item" style="margin-bottom: 2rem;">
-                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">drivers.csv</h3>
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">drivers.csv</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">Information about the drivers taking part in the championships.</p>
                         <table class="data-table">
                             <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
@@ -112,7 +119,7 @@
 
                     <!-- Circuits -->
                     <div class="dataset-item" style="margin-bottom: 2rem;">
-                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">circuits.csv</h3>
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">circuits.csv</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">Geographical data for all F1 tracks.</p>
                         <table class="data-table">
                             <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
@@ -128,7 +135,7 @@
 
                     <!-- Driver Standings -->
                     <div class="dataset-item" style="margin-bottom: 2rem;">
-                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">driver_standings.csv</h3>
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; border-left: 3px solid var(--f1-red); padding-left: 10px;">driver_standings.csv</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cumulative championship standings after each race.</p>
                         <table class="data-table">
                             <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
