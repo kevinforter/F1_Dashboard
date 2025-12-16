@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics - Drivers of this Project</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Titillium+Web:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            padding-bottom: 1rem;
+            max-height: calc(100vh - 60px); /* Tighter constraint */
+        }
+
+        .standoff-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: nowrap;
+            padding: 0 4rem;
+        }
+        
+        .driver-card {
+            flex: 1;
+            max-width: 380px;
+            background: linear-gradient(145deg, #1e1e24, #15151e);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .driver-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-color: var(--f1-red);
+        }
+
+        .driver-image-container {
+            width: 100%;
+            height: 200px; /* Further reduced height */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 2px solid var(--f1-red);
+        }
+
+        .driver-img {
+            width: 85%;
+            height: 90%;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 8px;
+            transition: transform 0.5s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .driver-card:hover .driver-img {
+            transform: scale(1.02);
+        }
+
+        .driver-info {
+            padding: 1.2rem;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .driver-name {
+            font-family: 'Titillium Web', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .driver-title {
+            color: var(--f1-red);
+            font-family: 'Titillium Web', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .driver-stats {
+            background: rgba(255,255,255,0.05);
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            color: #ccc;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-height: none;
+                justify-content: flex-start;
+                overflow-y: auto;
+                padding-bottom: 4rem;
+            }
+            .standoff-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+                flex-wrap: wrap;
+                margin-top: 2rem;
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="assets/images/F1-Logo.png" alt="F1 Analytics" class="f1-logo">
+            <span class="logo-text">ANALYTICS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="research.html">Research</a></li>
+            <li><a href="data.html">Data & Design</a></li>
+            <li><a href="references.html">References</a></li>
+            <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <header style="text-align: center; margin-bottom: 1rem;">
+            <h1 style="font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px;">Drivers of this Project</h1>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; font-size: 0.9rem;">
+                Meet the engineering team behind the dashboard.
+            </p>
+        </header>
+
+        <div class="standoff-container">
+            
+            <!-- Yasna -->
+            <div class="driver-card">
+                <div class="driver-image-container">
+                    <img src="assets/images/Yasna.png" alt="Yasna" class="driver-img">
+                </div>
+                <div class="driver-info">
+                    <div class="driver-name">Yasna</div>
+                    <div class="driver-title">BSc Business Information Technology</div>
+                    
+                    <div class="driver-stats">
+                        <div class="stat-line">
+                            <span>Role</span>
+                            <span class="stat-value">Lead Data Strategist</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Focus</span>
+                            <span class="stat-value">Analytics & UX</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Driving Style</span>
+                            <span class="stat-value">Precision & Logic</span>
+                        </div>
+                        <p style="margin-top: 0.8rem; font-size: 0.85rem; line-height: 1.4; color: #ddd; margin-bottom: 0;">
+                            "The Mastermind." Known for dissecting complex datasets with surgical precision. Yasna ensures that every pixel on the dashboard serves a purpose, translating raw telemetry into actionable insights.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Catti -->
+            <div class="driver-card">
+                <div class="driver-image-container">
+                    <img src="assets/images/Catti.png" alt="Catti" class="driver-img">
+                </div>
+                <div class="driver-info">
+                    <div class="driver-name">Catti</div>
+                    <div class="driver-title">BSc Business Information Technology</div>
+                    
+                    <div class="driver-stats">
+                        <div class="stat-line">
+                            <span>Role</span>
+                            <span class="stat-value">Chief Visualization Engineer</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Focus</span>
+                            <span class="stat-value">Design & Frontend</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Driving Style</span>
+                            <span class="stat-value">Creative & Dynamic</span>
+                        </div>
+                        <p style="margin-top: 0.8rem; font-size: 0.85rem; line-height: 1.4; color: #ddd; margin-bottom: 0;">
+                            "The Architect." Catti combines technical skill with artistic flair. Responsible for the dashboard's sleek aesthetic and fluid interactivity, ensuring the user experience is as fast as the cars themselves.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: var(--text-secondary); text-align: center; font-size: 0.85rem;">
+            <p>Created by Catharina and Yasna. Course: DAVI.</p>
+        </footer>
+    </div>
+</body>
+</html>
