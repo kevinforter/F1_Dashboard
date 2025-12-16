@@ -108,8 +108,50 @@ a:hover {
 
 /* Common Layout */
 /* Updated for 100vh Dashboard */
+/* Main wrapper to control height explicitly for Home Page logic */
+.container-wrapper {
+    /* Height: 100vh - Navbar(~55px) - Margins(2rem: 1rem top + 1rem bottom) */
+    height: calc(100vh - 55px - 2rem);
+    width: calc(100% - 4rem);
+    /* Logic: 100% - left/right padding (2rem each) */
+    margin: 1rem auto;
+    /* 1rem top/bottom margin */
+    overflow: hidden;
+    border-radius: 1rem;
+    /* Moving border radius here if wrapper defines the shape */
+}
+
+/* Home Container fills the wrapper */
+.home-container {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/F1-Wallpaper.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    width: 100%;
+    height: 100%;
+    /* Fill wrapper */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Center content vertically */
+    padding: 2rem;
+    /* 2rem padding from sides */
+    border-radius: 1rem;
+    /* Ensure radius matches */
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    /* 2rem gap between cards */
+    width: 100%;
+}
+
+/* Home Page Specifics */
 .container {
-    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
     padding: 1rem 2rem;
@@ -131,14 +173,28 @@ a:hover {
 .hero h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
-    color: var(--f1-red);
+    color: white;
+    /* Ensure visible on bg */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero p {
     font-size: 1.2rem;
-    color: var(--text-secondary);
+    color: #ddd;
+    /* Lighter for contrast */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     max-width: 800px;
     margin: 0 auto 2rem;
+}
+
+.info-card {
+    background-color: rgba(31, 31, 39, 0.6);
+    /* Semi-transparent */
+    padding: 2rem;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    /* Glassmorphism */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn {

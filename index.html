@@ -25,7 +25,8 @@
         </ul>
     </nav>
 
-    <div class="container">
+    <div class="container-wrapper">
+    <div class="home-container">
         <header class="hero">
             <h1>Defining the "Complete" Driver</h1>
             <p>
@@ -41,25 +42,26 @@
                 "What defines a 'complete' driver in Formula 1?"
             </p>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px;">
+            <div class="cards-grid">
+                <div class="info-card">
                     <h3>Concept</h3>
-                    <p style="margin-top: 1rem; color: var(--text-secondary);">
+                    <p style="margin-top: 1rem; color: #ddd; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
                         Beyond the championship points, we break down driver performance into key metrics: 
                         <strong>Overtaking Ability</strong> (The Fighter), 
                         <strong>Raw Speed</strong> (The Speedster), and 
                         <strong>Reliability</strong> (The Consistent).
                     </p>
                 </div>
-                <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px;">
+                <div class="info-card">
                     <h3>Interaction</h3>
-                    <p style="margin-top: 1rem; color: var(--text-secondary);">
+                    <p style="margin-top: 1rem; color: #ddd; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
                         Use the interactive dashboard to view the season landscape. 
                         Filter by year to see how the definition of a champion has evolved over the last decade.
                     </p>
                 </div>
             </div>
         </section>
+    </div>
     </div>
 
     <script src="assets/js/main.js"></script>
