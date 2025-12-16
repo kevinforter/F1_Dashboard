@@ -27,39 +27,147 @@
 
     <div class="container">
         
-        <section style="margin-bottom: 4rem;">
-            <h1>Data Source</h1>
-            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-                The data for this project is sourced from the Ergast Developer API, a comprehensive database of Formula 1 history.
-                We have focused on the modern era (2010 onwards) to reflect current racing dynamics.
-            </p>
-            
-            <table style="width: 100%; border-collapse: collapse; margin-top: 2rem; background: var(--bg-card);">
-                <thead>
-                    <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
-                        <th style="padding: 1rem;">Dataset</th>
-                        <th style="padding: 1rem;">Description</th>
-                        <th style="padding: 1rem;">Size</th>
-                    </tr>
-                </thead>
-                <tbody style="color: var(--text-secondary);">
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 1rem;">races.csv</td>
-                        <td style="padding: 1rem;">Race information (date, circuit, year)</td>
-                        <td style="padding: 1rem;">~164 KB</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 1rem;">results.csv</td>
-                        <td style="padding: 1rem;">Race results (grid, position, driver, constructor)</td>
-                        <td style="padding: 1rem;">~1.7 MB</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 1rem;">drivers.csv</td>
-                        <td style="padding: 1rem;">Driver information (name, nationality)</td>
-                        <td style="padding: 1rem;">~94 KB</td>
-                    </tr>
-                </tbody>
-            </table>
+        <section class="data-content" style="margin-bottom: 4rem;">
+            <div class="data-card">
+                <h2>Data Source</h2>
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    The data for this project is sourced from the comprehensive 
+                    <a href="https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020" target="_blank" style="color: var(--f1-red);">Formula 1 World Championship (1950 - 2025)</a> 
+                    dataset on Kaggle (maintained by Rohan Rao).
+                </p>
+                <br>
+                <h3>Scope & Filtering</h3>
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    While the original dataset covers the history of F1 from 1950, this dashboard focuses exclusively on the modern era: 
+                    <strong>2010 to Present</strong>.
+                </p>
+                <div style="background: var(--bg-card); padding: 1.5rem; border-left: 4px solid var(--f1-red); border-radius: 4px;">
+                    <strong style="color: var(--text-primary);">Why 2010?</strong>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">
+                        In 2010, Formula 1 introduced a major overhaul of the points system (25-18-15-12-10-8-6-4-2-1), 
+                        drastically changing how championships were decided compared to previous eras (where wins were worth only 10 or 9 points). 
+                        Focusing on this period ensures consistent statistical comparison and reflects the dynamics of modern racing.
+                    </p>
+                </div>
+            </div>
+
+            <div class="data-card" style="margin-top: 3rem;">
+                <h2>Used Datasets</h2>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">The project utilizes the following CSV files from the dataset to generate its visualizations:</p>
+
+                <div class="dataset-list">
+                    <!-- Races -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">races.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Contains the schedule and information for every Grand Prix.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>raceId</td><td>Integer</td><td>Unique identifier for the race</td></tr>
+                                <tr><td>year</td><td>Integer</td><td>Season year (e.g., 2023)</td></tr>
+                                <tr><td>round</td><td>Integer</td><td>Sequential round number in the season</td></tr>
+                                <tr><td>circuitId</td><td>Integer</td><td>Foreign key links to circuits.csv</td></tr>
+                                <tr><td>name</td><td>String</td><td>Official name of the Grand Prix</td></tr>
+                                <tr><td>date</td><td>Date</td><td>Date of the race</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">results.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">The core dataset containing race results for every driver in every race.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>resultId</td><td>Integer</td><td>Unique identifier for the result</td></tr>
+                                <tr><td>raceId</td><td>Integer</td><td>Links to the specific race</td></tr>
+                                <tr><td>driverId</td><td>Integer</td><td>Links to the specific driver</td></tr>
+                                <tr><td>grid</td><td>Integer</td><td>Starting grid position</td></tr>
+                                <tr><td>positionOrder</td><td>Integer</td><td>Final finishing rank (numeric)</td></tr>
+                                <tr><td>points</td><td>Float</td><td>Points scored in the race</td></tr>
+                                <tr><td>statusId</td><td>Integer</td><td>Finishing status (Finished, Collision, etc.)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Drivers -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">drivers.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Information about the drivers taking part in the championships.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>driverId</td><td>Integer</td><td>Unique identifier for the driver</td></tr>
+                                <tr><td>code</td><td>String</td><td>3-letter driver code (e.g., HAM, VER)</td></tr>
+                                <tr><td>forename</td><td>String</td><td>Driver's first name</td></tr>
+                                <tr><td>surname</td><td>String</td><td>Driver's last name</td></tr>
+                                <tr><td>nationality</td><td>String</td><td>Driver's nationality</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Circuits -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">circuits.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Geographical data for all F1 tracks.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>circuitId</td><td>Integer</td><td>Unique identifier for the circuit</td></tr>
+                                <tr><td>name</td><td>String</td><td>Name of the circuit</td></tr>
+                                <tr><td>location</td><td>String</td><td>City location</td></tr>
+                                <tr><td>country</td><td>String</td><td>Country location</td></tr>
+                                <tr><td>lat/lng</td><td>Float</td><td>Geographical coordinates</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Driver Standings -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">driver_standings.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Cumulative championship standings after each race.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>raceId</td><td>Integer</td><td>The race at which standings are calculated</td></tr>
+                                <tr><td>driverId</td><td>Integer</td><td>The driver</td></tr>
+                                <tr><td>points</td><td>Float</td><td>Cumulative total points</td></tr>
+                                <tr><td>position</td><td>Integer</td><td>Rank in the championship</td></tr>
+                                <tr><td>wins</td><td>Integer</td><td>Count of wins so far in season</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pit Stops -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">pit_stops.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Detailed timing data for pit stops.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>raceId</td><td>Integer</td><td>The race</td></tr>
+                                <tr><td>driverId</td><td>Integer</td><td>The driver</td></tr>
+                                <tr><td>stop</td><td>Integer</td><td>Stop number (1st, 2nd, etc.)</td></tr>
+                                <tr><td>milliseconds</td><td>Integer</td><td>Duration of the stop in ms</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="dataset-item" style="margin-bottom: 2rem;">
+                        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">status.csv</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Lookup table for result status codes.</p>
+                        <table class="data-table">
+                            <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td>statusId</td><td>Integer</td><td>Unique ID linked from results.csv</td></tr>
+                                <tr><td>status</td><td>String</td><td>Text description (e.g., "Engine", "+1 Lap")</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section>
