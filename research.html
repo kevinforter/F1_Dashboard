@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics - Research</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Titillium+Web:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Research Split Layout */
+        .research-split {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            margin-top: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .research-split {
+                flex-direction: column;
+            }
+        }
+
+        .research-visual {
+            flex: 1;
+            min-width: 40%;
+            max-width: 50%;
+        }
+
+        .research-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .research-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+        .research-img:hover {
+            transform: scale(1.02);
+            border-color: var(--f1-red);
+        }
+        
+        .feedback-box {
+            background: rgba(225, 6, 0, 0.1);
+            border-left: 4px solid var(--f1-red);
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="assets/images/F1-Logo.png" alt="F1 Analytics" class="f1-logo">
+            <span class="logo-text">ANALYTICS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="research.html" class="active">Research</a></li>
+            <li><a href="data.html">Data & Design</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <section style="margin-bottom: 4rem;">
+            <h1>Project Evolution</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                This project documents the journey from a rough initial concept to a data-driven F1 dashboard. 
+                Below is the history of our design process, including early sketches, initial implementations, and the critical feedback that shaped the final product.
+            </p>
+
+            <!-- First Sketch -->
+            <div class="data-card">
+                <h2 style="border-left: 3px solid var(--f1-red); padding-left: 10px;">Phase 1: The Concept</h2>
+                
+                <div class="research-split">
+                    <div class="research-visual">
+                        <img src="assets/images/First_Sketch.jpeg" alt="First Project Sketch" class="research-img">
+                    </div>
+                    
+                    <div class="research-content">
+                        <p style="color: var(--text-secondary); margin-top: 0;">
+                            Our initial brainstorming focused on mapping race locations and visualizing simple linear progressions of driver standings.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First Implementation -->
+            <div class="data-card" style="margin-top: 3rem;">
+                <h2 style="border-left: 3px solid var(--f1-red); padding-left: 10px;">Phase 2: First Implementation</h2>
+                
+                <div class="research-split">
+                    <div class="research-visual">
+                        <img src="assets/images/First_Draft.png" alt="First Implemented Draft" class="research-img">
+                    </div>
+                    
+                    <div class="research-content">
+                        <p style="color: var(--text-secondary); margin-top: 0;">
+                            We built a functioning prototype ("First Draft") attempting to combine a world map with a line chart. 
+                            However, this version revealed significant design flaws regarding information density and clarity.
+                        </p>
+                        
+                        <div class="feedback-box">
+                            <h3 style="color: var(--f1-red); margin-bottom: 1rem;">Critical Feedback Loop</h3>
+                            
+                            <div class="feedback-item">
+                                <strong>1. Map Information & Legend</strong>
+                                "World map is not very informative → what do the different colors mean? Add a legend."
+                            </div>
+
+                            <div class="feedback-item">
+                                <strong>2. Chart Interpolation Issues</strong>
+                                "The line chart needs to be adjusted: it’s problematic because it’s not data-driven. Polynomial interpolation leads to this 'O'-shape, adding things that don’t actually exist. If kept, use straight lines instead of rounded ones."
+                            </div>
+
+                            <div class="feedback-item">
+                                <strong>3. Clarity of Purpose</strong>
+                                "The goal of the dashboard needs to be presented more clearly: what is the dashboard supposed to say? Best driver? It needs a sharper focus."
+                            </div>
+
+                            <div class="feedback-item">
+                                <strong>4. Depth of Analytics</strong>
+                                "Take a step further into analytics: possibly compare drivers or teams over the years, rather than just showing raw results."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evolution -->
+            <div class="data-card" style="margin-top: 3rem;">
+                <h2 style="border-left: 3px solid var(--f1-red); padding-left: 10px;">Phase 3: Refinement & Pivot</h2>
+                <p style="color: var(--text-secondary); margin-top: 1rem; margin-bottom: 1rem;">
+                    Based on the feedback, we fundamentally restructured the dashboard to focus on <strong>Comparative Analytics</strong> rather than just descriptive data.
+                </p>
+                
+                <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                    <li style="margin-bottom: 1rem; padding-left: 20px; border-left: 2px solid #555;">
+                        <strong style="color: var(--text-primary);">Narrowing the Scope:</strong> 
+                        We followed the instructor's advice to include "only drivers or constructors" to reduce noise, focusing on the human element of the sport.
+                    </li>
+                    <li style="margin-bottom: 1rem; padding-left: 20px; border-left: 2px solid #555;">
+                        <strong style="color: var(--text-primary);">Modern Era Dataset (2010+):</strong> 
+                        We restricted the dataset to 2010 onwards. This was a strategic choice due to the major points system overhaul (25 points for a win), ensuring that our analytical comparisons remain statistically valid without needing complex normalization algorithms.
+                    </li>
+                    <li style="margin-bottom: 1rem; padding-left: 20px; border-left: 2px solid #555;">
+                        <strong style="color: var(--text-primary);">Visual Integrity:</strong> 
+                        We abandoned polynomial interpolation for the charts, switching to straight lines to truthfully represent the discrete nature of race-by-race point accumulation.
+                    </li>
+                </ul>
+            </div>
+
+        </section>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
+            <p>Created by Catharina and Yasna. Course: DAVI.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
