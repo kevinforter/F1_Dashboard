@@ -23,16 +23,17 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center content vertically */
-            padding-bottom: 1rem;
-            max-height: calc(100vh - 60px); /* Tighter constraint */
+            justify-content: space-between; /* Space out header, content, footer */
+            padding-bottom: 0;
+            max-height: calc(100vh - 60px);
         }
 
         .standoff-container {
             display: flex;
             justify-content: center;
             gap: 2rem;
-            margin-top: 1rem;
+            margin-top: auto; /* Center vertically */
+            margin-bottom: auto; /* Center vertically */
             flex-wrap: nowrap;
             padding: 0 4rem;
         }
@@ -236,7 +237,7 @@
 
         </div>
 
-        <footer style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: var(--text-secondary); text-align: center; font-size: 0.85rem;">
+        <footer style="margin-top: 1.5rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
             <p>Created by Catharina and Yasna. Course: DAVI.</p>
         </footer>
     </div>
