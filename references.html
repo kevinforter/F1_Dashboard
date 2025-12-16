@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Analytics - References</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Titillium+Web:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="assets/images/F1-Logo.png" alt="F1 Analytics" class="f1-logo">
+            <span class="logo-text">ANALYTICS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="research.html">Research</a></li>
+            <li><a href="data.html">Data & Design</a></li>
+            <li><a href="references.html" class="active">References</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <section style="margin-bottom: 4rem;">
+            <h1>References & Data</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                The foundation of this dashboard relies on accurate historical data and open-source research. 
+                Below are the primary sources used for data ingestion and domain research.
+            </p>
+
+            <div class="data-card">
+                <h2 style="border-left: 3px solid var(--f1-red); padding-left: 10px;">Data Sources</h2>
+                <p style="color: var(--text-secondary); margin-top: 1rem;">
+                    The raw CSV files processing the dashboard's analytics are sourced from:
+                </p>
+                
+                <ul style="margin-top: 1.5rem; list-style: none; padding: 0;">
+                    <li style="margin-bottom: 1.5rem;">
+                        <a href="https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020" target="_blank" style="color: var(--f1-red); font-weight: bold; font-size: 1.1rem; text-decoration: none;">
+                            Kaggle: Formula 1 World Championship (1950 - 2025)
+                        </a>
+                        <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.95rem;">
+                            Maintained by Rohan Rao. This dataset provides the comprehensive history of F1, from which we filter for the modern era (2010-Present).
+                        </p>
+                    </li>
+                    <li style="margin-bottom: 1.5rem;">
+                        <a href="http://ergast.com/mrd/" target="_blank" style="color: var(--f1-red); font-weight: bold; font-size: 1.1rem; text-decoration: none;">
+                            Ergast Developer API
+                        </a>
+                        <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.95rem;">
+                            The original source for the CSV compilations, providing detailed lap times, pit stops, and qualifying data.
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="data-card" style="margin-top: 3rem;">
+                <h2 style="border-left: 3px solid var(--f1-red); padding-left: 10px;">Research Materials</h2>
+                <p style="color: var(--text-secondary); margin-top: 1rem;">
+                    Contextual information regarding the 2024 season and the evolution of regulations was cross-referenced with:
+                </p>
+
+                <ul style="margin-top: 1.5rem; list-style: none; padding: 0;">
+                    <li style="margin-bottom: 1.5rem;">
+                        <a href="https://en.wikipedia.org/wiki/2024_Formula_One_World_Championship" target="_blank" style="color: var(--f1-red); font-weight: bold; font-size: 1.1rem; text-decoration: none;">
+                            Wikipedia: 2024 Formula One World Championship
+                        </a>
+                        <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.95rem;">
+                            Used for validating the simplified season calendar and understanding the current constructor lineups and major regulation notes for the "Context" phase of our research.
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+        </section>
+
+        <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
+            <p>Created by Catharina and Yasna. Course: DAVI.</p>
+        </footer>
+    </div>
+</body>
+</html>
