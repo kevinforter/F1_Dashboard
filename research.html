@@ -70,6 +70,67 @@
             text-align: justify; /* Newspaper/Paper alignment */
             line-height: 1.8; /* Improve readability */
         }
+        
+        /* Zoom/Lens Effect */
+        .zoom-container {
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+            cursor: zoom-in;
+            position: relative;
+        }
+        
+        .research-img {
+            width: 100%;
+            height: auto;
+            display: block; /* Removes bottom space */
+            transition: transform 0.4s ease-out; /* Smooth lens feel */
+            border: none; /* Border moved to container */
+        }
+        
+        /* Hover = Red Border Only */
+        .zoom-container:hover {
+            border-color: var(--f1-red);
+            box-shadow: 0 0 10px rgba(225, 6, 0, 0.2); /* Subtle glow */
+        }
+        
+        .zoom-container:hover .research-img {
+            /* No zoom, just the border effect on container */
+            transform: none; 
+        }
+
+        /* Lightbox Modal */
+        #lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            cursor: zoom-out;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #lightbox-image {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid var(--f1-red);
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(225, 6, 0, 0.5);
+            animation: zoomOpen 0.3s;
+        }
+
+        @keyframes zoomOpen {
+            from {transform: scale(0)} 
+            to {transform: scale(1)}
+        }
     </style>
 </head>
 <body>
@@ -112,7 +173,9 @@
                 
                 <div class="research-split">
                     <div class="research-visual">
-                        <img src="assets/images/First_Sketch.jpeg" alt="First Project Sketch" class="research-img">
+                        <div class="zoom-container" onclick="openLightbox(this)">
+                            <img src="assets/images/First_Sketch.jpeg" alt="First Project Sketch" class="research-img">
+                        </div>
                         <p style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic; margin-top: 0.5rem; text-align: left;">Figure 1: Original concept sketch exploring map-based interaction.</p>
                     </div>
                     
@@ -133,7 +196,9 @@
                 
                 <div class="research-split">
                     <div class="research-visual">
-                        <img src="assets/images/First_Draft.png" alt="First Implemented Draft" class="research-img">
+                        <div class="zoom-container" onclick="openLightbox(this)">
+                            <img src="assets/images/First_Draft.png" alt="First Implemented Draft" class="research-img">
+                        </div>
                         <p style="font-size: 0.8rem; color: var(--text-secondary); font-style: italic; margin-top: 0.5rem; text-align: left;">Figure 2: Early prototype revealing layout and clarity issues.</p>
                     </div>
                     
@@ -204,5 +269,32 @@
         </footer>
     </div>
 
+    <!-- Lightbox Structure -->
+    <div id="lightbox-modal" onclick="closeLightbox()">
+        <img id="lightbox-image" src="">
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        function openLightbox(container) {
+            const img = container.querySelector('img');
+            const modal = document.getElementById('lightbox-modal');
+            const modalImg = document.getElementById('lightbox-image');
+            
+            modal.style.display = "flex";
+            modalImg.src = img.src;
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').style.display = "none";
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeLightbox();
+            }
+        });
+    </script>
 </body>
 </html>
