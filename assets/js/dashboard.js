@@ -784,9 +784,25 @@ function showTooltip(event, html) {
     tooltip.transition()
         .duration(200)
         .style("opacity", .9);
-    tooltip.html(html)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 28) + "px");
+    
+    tooltip.html(html);
+
+    // Get dimensions to prevent overflow
+    const tooltipNode = tooltip.node();
+    const tooltipRect = tooltipNode.getBoundingClientRect();
+    const pageWidth = window.innerWidth;
+
+    let left = event.pageX + 10;
+    let top = event.pageY - 28;
+
+    // Flip to left if it overflows right edge
+    if (left + tooltipRect.width > pageWidth - 20) {
+        left = event.pageX - tooltipRect.width - 10;
+    }
+
+    tooltip
+        .style("left", left + "px")
+        .style("top", top + "px");
 }
 
 function hideTooltip() {
