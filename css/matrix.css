@@ -1,0 +1,39 @@
+/* Performance Matrix Specific Styles */
+
+/* Grid / Table View */
+.perf-grid th,
+.perf-grid td {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    /* Center align for stats */
+}
+
+.perf-grid th:first-child,
+.perf-grid td:first-child {
+    text-align: left;
+    /* Keep names left aligned */
+}
+
+/* Arrow Indicators */
+.arrow-up {
+    color: #00D2BE;
+    /* Teal/Green */
+    font-weight: bold;
+}
+
+.arrow-down {
+    color: #E10600;
+    /* F1 Red */
+    font-weight: bold;
+}
+
+.arrow-neutral {
+    color: #888;
+    font-weight: bold;
+}
+
+/* Tooltip Enhancement */
+.d3-tooltip strong {
+    color: #fff;
+    text-transform: uppercase;
+}

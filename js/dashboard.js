@@ -646,17 +646,44 @@ function drawTrajectory(races, results, selectedCircuitId) {
 }
 
 function drawPerformanceMatrix(races, results) {
-    console.log("drawPerformanceMatrix called", { racesCount: races.length, resultsCount: results.length });
+    console.log("drawPerformanceMatrix called", { 
+        mode: getMatrixMode(),
+        races: races.length, 
+        results: results.length 
+    });
+
     const container = d3.select("#performanceMatrix");
     container.html("");
     
+    // Determine which view to show
+    const mode = getMatrixMode();
+
+    if (mode === 'DRIVER_CIRCUIT') {
+        renderDriverCircuitHistory(state.selectedDriver, state.selectedCircuit);
+    } else if (mode === 'CIRCUIT') {
+        renderCircuitGrid(races, results, state.selectedCircuit);
+    } else if (mode === 'DRIVER') {
+        renderDriverSeasonDelta(races, results, state.selectedDriver);
+    } else {
+        renderSeasonScatter(results); // Default
+    }
+}
+
+function getMatrixMode() {
+    if (state.selectedDriver !== 'all' && state.selectedCircuit !== 'all') return 'DRIVER_CIRCUIT';
+    if (state.selectedCircuit !== 'all') return 'CIRCUIT';
+    if (state.selectedDriver !== 'all') return 'DRIVER';
+    return 'SEASON';
+}
+
+// --- VIEW 1: DEFAULT SEASON SCATTER ---
+function renderSeasonScatter(results) {
+    const container = d3.select("#performanceMatrix");
     const margin = {top: 20, right: 20, bottom: 40, left: 40};
     const rect = container.node().getBoundingClientRect();
-    console.log("Matrix Container Rect:", rect);
-
     const width = rect.width - margin.left - margin.right;
     const height = rect.height - margin.top - margin.bottom;
-    
+
     if (width <= 0 || height <= 0) return;
 
     const svg = container.append("svg")
@@ -665,7 +692,7 @@ function drawPerformanceMatrix(races, results) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Data Processing: Avg Start vs Avg Finish
+    // Data Processing
     const driverStats = d3.rollups(results, v => {
         const validGrid = v.filter(d => parseInt(d.grid) > 0);
         const validPos = v.filter(d => parseInt(d.positionOrder) > 0);
@@ -678,36 +705,25 @@ function drawPerformanceMatrix(races, results) {
         };
     }, d => d.driverId)
     .map(d => d[1])
-    .filter(d => d.count >= 1); // Show even if just 1 race!
+    .filter(d => d.count >= 1);
 
-    // Scales (Reverse! 1 is good, maxVal is bad)
-    // Dynamic max based on data (some years have >20 drivers)
     const maxVal = Math.max(20, d3.max(driverStats, d => Math.max(d.avgGrid, d.avgFinish)) || 20);
     
-    const x = d3.scaleLinear()
-        .domain([maxVal + 1, 1]) // +1 padding
-        .range([0, width]);
-        
-    const y = d3.scaleLinear()
-        .domain([maxVal + 1, 1]) // +1 padding
-        .range([height, 0]);
+    const x = d3.scaleLinear().domain([maxVal + 1, 1]).range([0, width]);
+    const y = d3.scaleLinear().domain([maxVal + 1, 1]).range([height, 0]);
 
-    // Diagonal Reference Line (Expected Performance: Start = Finish)
+    // Reference Line
     svg.append("line")
-        .attr("x1", x(maxVal + 1))
-        .attr("y1", y(maxVal + 1))
-        .attr("x2", x(1))
-        .attr("y2", y(1))
-        .attr("stroke", "#999") // Much lighter
+        .attr("x1", x(maxVal + 1)).attr("y1", y(maxVal + 1))
+        .attr("x2", x(1)).attr("y2", y(1))
+        .attr("stroke", "#999")
         .attr("stroke-width", 1.5)
-        .attr("stroke-dasharray", "5,5") // Distinct dash
+        .attr("stroke-dasharray", "5,5")
         .attr("opacity", 0.8);
 
     svg.append("text")
-        .attr("x", x(maxVal + 1))
-        .attr("y", y(1) - 10)
-        .attr("text-anchor", "start")
-        .style("fill", "#999") // Lighter color for visibility on dark theme
+        .attr("x", x(maxVal + 1)).attr("y", y(1) - 10)
+        .style("fill", "#999")
         .style("font-size", "11px")
         .style("font-weight", "bold")
         .text("- - - Expected Performance");
@@ -719,36 +735,28 @@ function drawPerformanceMatrix(races, results) {
         .style("color", "#666");
     
     svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height + 35)
-        .style("text-anchor", "middle")
-        .style("fill", "#888")
-        .style("font-size", "10px")
-        .text("Avg Starting Position (Grid)");
+        .attr("x", width / 2).attr("y", height + 35)
+        .style("text-anchor", "middle").style("fill", "#888")
+        .style("font-size", "10px").text("Avg Starting Position (Grid)");
 
     svg.append("g")
-        .call(d3.axisLeft(y))
-        .style("color", "#666");
+        .call(d3.axisLeft(y)).style("color", "#666");
         
     svg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -30)
-        .style("text-anchor", "middle")
-        .style("fill", "#888")
-        .style("font-size", "10px")
-        .text("Avg Finishing Position");
+        .attr("x", -height / 2).attr("y", -30)
+        .style("text-anchor", "middle").style("fill", "#888")
+        .style("font-size", "10px").text("Avg Finishing Position");
 
-    // Scatter Dots
+    // Dots
     svg.selectAll(".dot")
         .data(driverStats)
-        .enter()
-        .append("circle")
+        .enter().append("circle")
         .attr("class", "dot")
         .attr("cx", d => x(d.avgGrid))
         .attr("cy", d => y(d.avgFinish))
         .attr("r", d => d.driverId === state.selectedDriver ? 8 : 5)
-        .attr("fill", d => d.driverId === state.selectedDriver ? "#387DFF" : (d.avgFinish < d.avgGrid ? "#00D2BE" : "#E10600")) // Green if gained, Red if lost
+        .attr("fill", d => d.driverId === state.selectedDriver ? "#387DFF" : (d.avgFinish < d.avgGrid ? "#00D2BE" : "#E10600"))
         .attr("opacity", d => d.driverId === state.selectedDriver ? 1 : 0.7)
         .attr("stroke", "#fff")
         .attr("stroke-width", d => d.driverId === state.selectedDriver ? 2 : 0)
@@ -773,6 +781,264 @@ function drawPerformanceMatrix(races, results) {
 
     svg.append("circle").attr("cx", width - 80).attr("cy", height - 25).attr("r", 4).attr("fill", "#E10600");
     svg.append("text").attr("x", width - 70).attr("y", height - 25).attr("dy", "0.3em").style("fill", "#bbb").style("font-size", "10px").text("Lost Pos.");
+}
+
+// --- VIEW 2: CIRCUIT FILTER (GRID + ARROWS) ---
+function renderCircuitGrid(races, results, circuitId) {
+    const container = d3.select("#performanceMatrix");
+    // Filter results just for this circuit in this year
+    const race = races.find(r => r.circuitId === circuitId);
+    if (!race) {
+        container.html("<div style='padding:1rem; color:#888'>No race data for this circuit/year.</div>");
+        return;
+    }
+
+    const circuitResults = results.filter(r => r.raceId === race.raceId)
+        .sort((a,b) => parseInt(a.positionOrder) - parseInt(b.positionOrder));
+
+    const table = container.append("div")
+        .style("height", "100%")
+        .style("overflow-y", "auto")
+        .append("table")
+        .attr("class", "f1-table perf-grid");
+
+    const thead = table.append("thead").append("tr");
+    thead.append("th").text("Driver");
+    thead.append("th").text("Start");
+    thead.append("th").text("Finish");
+    thead.append("th").text("+/-");
+
+    const tbody = table.append("tbody");
+
+    circuitResults.forEach(r => {
+        const driver = rawData.driverMap.get(r.driverId);
+        const grid = parseInt(r.grid);
+        const finish = parseInt(r.positionOrder);
+        const diff = grid - finish; // Positive means gained positions (started 5, finished 3 => +2)
+
+        const row = tbody.append("tr");
+        row.append("td").text(`${driver.forename} ${driver.surname}`);
+        row.append("td").text(grid === 0 ? "Pit" : grid); // 0 usually means pit lane
+        row.append("td").text(finish);
+        
+        const changeCell = row.append("td")
+            .style("display", "flex")
+            .style("align-items", "center")
+            .style("justify-content", "center")
+            .style("gap", "5px");
+        
+        if (diff > 0) {
+            changeCell.style("color", "#00D2BE");
+            changeCell.html(`<span class="arrow-up">▲</span> ${diff}`);
+        } else if (diff < 0) {
+            changeCell.style("color", "#E10600");
+            changeCell.html(`<span class="arrow-down">▼</span> ${Math.abs(diff)}`);
+        } else {
+            changeCell.style("color", "#888");
+            changeCell.html(`<span class="arrow-neutral">-</span>`);
+        }
+    });
+}
+
+// --- VIEW 3: DRIVER FILTER (SEASON DELTA BAR CHART) ---
+function renderDriverSeasonDelta(races, results, driverId) {
+    const container = d3.select("#performanceMatrix");
+    const margin = {top: 20, right: 20, bottom: 40, left: 40};
+    const rect = container.node().getBoundingClientRect();
+    const width = rect.width - margin.left - margin.right;
+    const height = rect.height - margin.top - margin.bottom;
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Data: Round vs (Grid - Finish)
+    const driverResults = results.filter(r => r.driverId === driverId);
+    
+    // Sort by round
+    const raceRoundMap = new Map(races.map(r => [r.raceId, parseInt(r.round)]));
+    const data = driverResults.map(r => {
+        const grid = parseInt(r.grid) || 20;
+        const finish = parseInt(r.positionOrder);
+        return {
+            round: raceRoundMap.get(r.raceId),
+            diff: grid - finish, // +ve is good
+            raceId: r.raceId
+        };
+    }).sort((a,b) => a.round - b.round);
+
+    const rounds = races.map(r => parseInt(r.round)).sort((a,b) => a-b);
+    
+    const x = d3.scaleBand()
+        .domain(rounds)
+        .range([0, width])
+        .padding(0.2);
+
+    const maxDiff = d3.max(data, d => Math.abs(d.diff)) || 5;
+    const y = d3.scaleLinear()
+        .domain([-maxDiff, maxDiff])
+        .range([height, 0]);
+
+    // Zero line
+    svg.append("line")
+        .attr("x1", 0).attr("x2", width)
+        .attr("y1", y(0)).attr("y2", y(0))
+        .attr("stroke", "#666")
+        .attr("stroke-width", 1);
+
+    // Bars
+    // Need mapping from round to x-position
+    svg.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("x", d => x(d.round))
+        .attr("y", d => d.diff > 0 ? y(d.diff) : y(0))
+        .attr("width", x.bandwidth())
+        .attr("height", d => Math.abs(y(d.diff) - y(0)))
+        .attr("fill", d => d.diff > 0 ? "#00D2BE" : (d.diff < 0 ? "#E10600" : "#888"))
+        .on("mouseover", (e, d) => {
+            const race = races.find(r => r.raceId === d.raceId);
+            const circuit = rawData.circuitMap.get(race.circuitId);
+            showTooltip(e, `
+                <strong>${circuit.name}</strong><br>
+                Positions Gained: ${d.diff > 0 ? '+' : ''}${d.diff}
+            `);
+        })
+        .on("mouseout", hideTooltip);
+
+    // Axis
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).tickFormat(d => d)) // Just round number
+        .style("color", "#666");
+
+    svg.append("g")
+        .call(d3.axisLeft(y).ticks(5))
+        .style("color", "#666");
+
+    svg.append("text")
+        .attr("x", width / 2).attr("y", height + 35)
+        .style("text-anchor", "middle").style("fill", "#888")
+        .style("font-size", "10px").text("Race Round");
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -30) // Position to the left of axis
+        .style("text-anchor", "middle")
+        .style("fill", "#888")
+        .style("font-size", "10px")
+        .text("Lost / Gained Positions");
+
+
+
+}
+
+// --- VIEW 4: DRIVER + CIRCUIT (HISTORICAL TIMELINE) ---
+function renderDriverCircuitHistory(driverId, circuitId) {
+    const container = d3.select("#performanceMatrix");
+    const margin = {top: 20, right: 30, bottom: 40, left: 40};
+    const rect = container.node().getBoundingClientRect();
+    const width = rect.width - margin.left - margin.right;
+    const height = rect.height - margin.top - margin.bottom;
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Need to find ALL races at this circuit across ALL years
+    // rawData.races contains all years
+    const racesAtCircuit = rawData.races.filter(r => r.circuitId === circuitId);
+    const raceIds = new Set(racesAtCircuit.map(r => r.raceId));
+    
+    // Find results for this driver in those races
+    // rawData.results contains all years
+    // BUT we might need to fetch full results first? 
+    // Wait, rawData.results IS loaded fully in loadData? 
+    // Checking loadData: d3.csv('assets/data/results.csv') -> It loads EVERYTHING. 
+    // Yes, rawData.results has all history.
+    
+    const historyData = rawData.results
+        .filter(r => r.driverId === driverId && raceIds.has(r.raceId))
+        .map(r => {
+            const race = racesAtCircuit.find(race => race.raceId === r.raceId);
+            return {
+                year: parseInt(race.year),
+                grid: parseInt(r.grid),
+                finish: parseInt(r.positionOrder)
+            };
+        })
+        .sort((a,b) => a.year - b.year);
+
+    if (historyData.length === 0) {
+        container.html("<div style='padding:1rem; color:#888'>No historical data for this driver at this circuit.</div>");
+        return;
+    }
+
+    const x = d3.scaleLinear()
+        .domain(d3.extent(historyData, d => d.year))
+        .range([0, width]);
+        
+    // Y-axis 1-20 (Inverted)
+    const y = d3.scaleLinear()
+        .domain([22, 1])
+        .range([height, 0]);
+
+    // Axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).tickFormat(d3.format("d")).ticks(historyData.length)) // Show all years if few
+        .style("color", "#666");
+
+    svg.append("g")
+        .call(d3.axisLeft(y))
+        .style("color", "#666");
+
+    // Line (Finish Position)
+    const line = d3.line()
+        .x(d => x(d.year))
+        .y(d => y(d.finish));
+
+    svg.append("path")
+        .datum(historyData)
+        .attr("fill", "none")
+        .attr("stroke", "#387DFF")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    // Dots
+    svg.selectAll(".dot")
+        .data(historyData)
+        .enter().append("circle")
+        .attr("cx", d => x(d.year))
+        .attr("cy", d => y(d.finish))
+        .attr("r", 4)
+        .attr("fill", "#387DFF")
+        .attr("stroke", "#fff")
+        .on("mouseover", (e, d) => {
+            showTooltip(e, `
+                <strong>${d.year}</strong><br>
+                Start: ${d.grid}<br>
+                Finish: ${d.finish}
+            `);
+        })
+        .on("mouseout", hideTooltip);
+
+    // Title
+    const driverName = rawData.driverMap.get(driverId).surname;
+    const circuitName = rawData.circuitMap.get(circuitId).name;
+    
+    svg.append("text")
+        .attr("x", width/2)
+        .attr("y", -5)
+        .style("text-anchor", "middle")
+        .style("fill", "#eee")
+        .style("font-size", "12px")
+        .text(`${driverName} @ ${circuitName}: History`);
 }
 
 // Tooltip Helpers
