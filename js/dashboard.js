@@ -817,7 +817,12 @@ function renderCircuitGrid(races, results, circuitId, highlightDriverId = null) 
         const finish = parseInt(r.positionOrder);
         const diff = grid - finish; // Positive means gained positions (started 5, finished 3 => +2)
 
-        const row = tbody.append("tr");
+        const row = tbody.append("tr")
+            .style("cursor", "pointer")
+            .on("click", () => {
+                 const newDriver = state.selectedDriver === r.driverId ? 'all' : r.driverId;
+                 d3.select("#driverSelect").property("value", newDriver).dispatch("change");
+            });
 
         // Highlight row if this is the selected driver
         if (highlightDriverId && r.driverId === highlightDriverId) {
