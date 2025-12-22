@@ -844,7 +844,7 @@ function renderCircuitGrid(races, results, circuitId) {
 // --- VIEW 3: DRIVER FILTER (DOT PLOT: Grid vs Finish) ---
 function renderDriverSeasonDelta(races, results, driverId) {
     const container = d3.select("#performanceMatrix");
-    const margin = {top: 15, right: 20, bottom: 40, left: 40};
+    const margin = {top: 20, right: 20, bottom: 40, left: 40};
     const rect = container.node().getBoundingClientRect();
     const width = rect.width - margin.left - margin.right;
     const height = rect.height - margin.top - margin.bottom;
