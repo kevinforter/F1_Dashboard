@@ -841,9 +841,10 @@ function renderCircuitGrid(races, results, circuitId) {
 }
 
 // --- VIEW 3: DRIVER FILTER (SEASON DELTA BAR CHART) ---
+// --- VIEW 3: DRIVER FILTER (DOT PLOT: Grid vs Finish) ---
 function renderDriverSeasonDelta(races, results, driverId) {
     const container = d3.select("#performanceMatrix");
-    const margin = {top: 20, right: 20, bottom: 40, left: 40};
+    const margin = {top: 15, right: 20, bottom: 40, left: 40};
     const rect = container.node().getBoundingClientRect();
     const width = rect.width - margin.left - margin.right;
     const height = rect.height - margin.top - margin.bottom;
@@ -854,16 +855,20 @@ function renderDriverSeasonDelta(races, results, driverId) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Data: Round vs (Grid - Finish)
+    // Data Processing
     const driverResults = results.filter(r => r.driverId === driverId);
     
-    // Sort by round
+    // Process Data
     const raceRoundMap = new Map(races.map(r => [r.raceId, parseInt(r.round)]));
     const data = driverResults.map(r => {
-        const grid = parseInt(r.grid) || 20;
+        let grid = parseInt(r.grid);
+        if (grid === 0) grid = 20; // Treat pit lane start as back of grid for viz
+        
         const finish = parseInt(r.positionOrder);
         return {
             round: raceRoundMap.get(r.raceId),
+            grid: grid,
+            finish: finish,
             diff: grid - finish, // +ve is good
             raceId: r.raceId
         };
@@ -871,47 +876,79 @@ function renderDriverSeasonDelta(races, results, driverId) {
 
     const rounds = races.map(r => parseInt(r.round)).sort((a,b) => a-b);
     
-    const x = d3.scaleBand()
+    // Scales
+    const x = d3.scalePoint()
         .domain(rounds)
         .range([0, width])
-        .padding(0.2);
+        .padding(0.5);
 
-    const maxDiff = d3.max(data, d => Math.abs(d.diff)) || 5;
     const y = d3.scaleLinear()
-        .domain([-maxDiff, maxDiff])
+        .domain([20, 1]) // 20 at bottom, 1 at top
         .range([height, 0]);
 
-    // Zero line
-    svg.append("line")
-        .attr("x1", 0).attr("x2", width)
-        .attr("y1", y(0)).attr("y2", y(0))
-        .attr("stroke", "#666")
-        .attr("stroke-width", 1);
+    // Gridlines
+    svg.append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(y).ticks(10).tickSize(-width).tickFormat(""))
+        .style("stroke-opacity", 0.1);
 
-    // Bars
-    // Need mapping from round to x-position
-    svg.selectAll(".bar")
+    // Connector Lines (The "Stick" of the lollipop)
+    svg.selectAll(".connector")
         .data(data)
-        .enter().append("rect")
-        .attr("x", d => x(d.round))
-        .attr("y", d => d.diff > 0 ? y(d.diff) : y(0))
-        .attr("width", x.bandwidth())
-        .attr("height", d => Math.abs(y(d.diff) - y(0)))
+        .enter().append("line")
+        .attr("x1", d => x(d.round))
+        .attr("x2", d => x(d.round))
+        .attr("y1", d => y(d.grid))
+        .attr("y2", d => y(d.finish))
+        .attr("stroke", d => d.diff > 0 ? "#00D2BE" : (d.diff < 0 ? "#E10600" : "#888"))
+        .attr("stroke-width", 2)
+        .attr("opacity", 0.8);
+
+    // Start Dots (Grid)
+    svg.selectAll(".dot-start")
+        .data(data)
+        .enter().append("circle")
+        .attr("cx", d => x(d.round))
+        .attr("cy", d => y(d.grid))
+        .attr("r", 3)
+        .attr("fill", "#222") // Dark center
+        .attr("stroke", "#888") // Grey ring
+        .attr("stroke-width", 1.5)
+        .on("mouseover", (e, d) => showTooltip(e, `Start: P${d.grid}`))
+        .on("mouseout", hideTooltip);
+
+    // Finish Dots (Position)
+    svg.selectAll(".dot-finish")
+        .data(data)
+        .enter().append("circle")
+        .attr("cx", d => x(d.round))
+        .attr("cy", d => y(d.finish))
+        .attr("r", 5)
         .attr("fill", d => d.diff > 0 ? "#00D2BE" : (d.diff < 0 ? "#E10600" : "#888"))
-        .on("mouseover", (e, d) => {
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1)
+        .style("cursor", "pointer")
+         .on("mouseover", (e, d) => {
             const race = races.find(r => r.raceId === d.raceId);
             const circuit = rawData.circuitMap.get(race.circuitId);
+            
+            let gainLossText = "";
+            if (d.diff > 0) gainLossText = `<span style="color:#00D2BE">▲ Gained ${d.diff}</span>`;
+            else if (d.diff < 0) gainLossText = `<span style="color:#E10600">▼ Lost ${Math.abs(d.diff)}</span>`;
+            else gainLossText = `<span style="color:#888">- Maintained</span>`;
+
             showTooltip(e, `
                 <strong>${circuit.name}</strong><br>
-                Positions Gained: ${d.diff > 0 ? '+' : ''}${d.diff}
+                Start: P${d.grid} → Finish: P${d.finish}<br>
+                ${gainLossText}
             `);
         })
         .on("mouseout", hideTooltip);
 
-    // Axis
+    // Axes
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).tickFormat(d => d)) // Just round number
+        .call(d3.axisBottom(x).tickFormat(d => d)) 
         .style("color", "#666");
 
     svg.append("g")
@@ -925,15 +962,20 @@ function renderDriverSeasonDelta(races, results, driverId) {
 
     svg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -30) // Position to the left of axis
-        .style("text-anchor", "middle")
-        .style("fill", "#888")
-        .style("font-size", "10px")
-        .text("Lost / Gained Positions");
+        .attr("x", -height / 2).attr("y", -30)
+        .style("text-anchor", "middle").style("fill", "#888")
+        .style("font-size", "10px").text("Position (1st is Top)");
 
+    // Legend
+    const legend = svg.append("g").attr("transform", `translate(${width - 100}, -25)`);
+    
+    // Legend Dot 1: Start
+    legend.append("circle").attr("r", 3).attr("fill", "#222").attr("stroke", "#888").attr("stroke-width", 1.5);
+    legend.append("text").attr("x", 8).attr("y", 4).text("Start").style("fill", "#aaa").style("font-size", "10px");
 
-
+    // Legend Dot 2: Finish
+    legend.append("circle").attr("cx", 45).attr("cy", 0).attr("r", 4).attr("fill", "#00D2BE").attr("stroke", "#fff");
+    legend.append("text").attr("x", 55).attr("y", 4).text("Finish").style("fill", "#aaa").style("font-size", "10px");
 }
 
 // --- VIEW 4: DRIVER + CIRCUIT (HISTORICAL TIMELINE) ---
