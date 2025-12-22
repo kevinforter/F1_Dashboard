@@ -659,7 +659,7 @@ function drawPerformanceMatrix(races, results) {
     const mode = getMatrixMode();
 
     if (mode === 'DRIVER_CIRCUIT') {
-        renderDriverCircuitHistory(state.selectedDriver, state.selectedCircuit);
+        renderCircuitGrid(races, results, state.selectedCircuit, state.selectedDriver);
     } else if (mode === 'CIRCUIT') {
         renderCircuitGrid(races, results, state.selectedCircuit);
     } else if (mode === 'DRIVER') {
@@ -784,7 +784,7 @@ function renderSeasonScatter(results) {
 }
 
 // --- VIEW 2: CIRCUIT FILTER (GRID + ARROWS) ---
-function renderCircuitGrid(races, results, circuitId) {
+function renderCircuitGrid(races, results, circuitId, highlightDriverId = null) {
     const container = d3.select("#performanceMatrix");
     // Filter results just for this circuit in this year
     const race = races.find(r => r.circuitId === circuitId);
@@ -817,6 +817,17 @@ function renderCircuitGrid(races, results, circuitId) {
         const diff = grid - finish; // Positive means gained positions (started 5, finished 3 => +2)
 
         const row = tbody.append("tr");
+
+        // Highlight row if this is the selected driver
+        if (highlightDriverId && r.driverId === highlightDriverId) {
+            row.style("background-color", "rgba(56, 125, 255, 0.2)") // Semi-transparent blue
+               .style("border-left", "3px solid #387DFF");
+            
+            // Auto-scroll to this row with animation
+            setTimeout(() => {
+                row.node().scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100); // Small delay to ensure render is complete
+        }
         row.append("td").text(`${driver.forename} ${driver.surname}`);
         row.append("td").text(grid === 0 ? "Pit" : grid); // 0 usually means pit lane
         row.append("td").text(finish);
