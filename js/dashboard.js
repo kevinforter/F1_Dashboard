@@ -840,7 +840,6 @@ function renderCircuitGrid(races, results, circuitId) {
     });
 }
 
-// --- VIEW 3: DRIVER FILTER (SEASON DELTA BAR CHART) ---
 // --- VIEW 3: DRIVER FILTER (DOT PLOT: Grid vs Finish) ---
 function renderDriverSeasonDelta(races, results, driverId) {
     const container = d3.select("#performanceMatrix");
@@ -985,10 +984,15 @@ function renderDriverSeasonDelta(races, results, driverId) {
     startItem.append("div").style("width", "8px").style("height", "8px").style("border", "1.5px solid #888").style("border-radius", "50%").style("background", "transparent");
     startItem.append("span").text("Start").style("color", "#aaa").style("font-size", "11px");
 
-    // Finish Item
-    const finishItem = legend.append("div").style("display", "flex").style("align-items", "center").style("gap", "4px");
-    finishItem.append("div").style("width", "8px").style("height", "8px").style("background", "#00D2BE").style("border-radius", "50%");
-    finishItem.append("span").text("Finish").style("color", "#aaa").style("font-size", "11px");
+    // Gained Item
+    const gainedItem = legend.append("div").style("display", "flex").style("align-items", "center").style("gap", "4px");
+    gainedItem.append("div").style("width", "8px").style("height", "8px").style("background", "#00D2BE").style("border-radius", "50%");
+    gainedItem.append("span").text("Gained").style("color", "#aaa").style("font-size", "11px");
+
+    // Lost Item
+    const lostItem = legend.append("div").style("display", "flex").style("align-items", "center").style("gap", "4px");
+    lostItem.append("div").style("width", "8px").style("height", "8px").style("background", "#E10600").style("border-radius", "50%");
+    lostItem.append("span").text("Lost").style("color", "#aaa").style("font-size", "11px");
 }
 
 // --- VIEW 4: DRIVER + CIRCUIT (HISTORICAL TIMELINE) ---
