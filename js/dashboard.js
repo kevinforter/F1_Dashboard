@@ -404,6 +404,7 @@ function drawDriverStandings(year, races, selectedDriverId, selectedCircuitId) {
         const isSelected = s.driverId === selectedDriverId;
         const row = tbody.append("tr")
             .style("background-color", isSelected ? "rgba(56, 125, 255, 0.2)" : null) // Highlight blue
+            .style("border-left", isSelected ? "3px solid #387DFF" : "3px solid transparent")
             .style("font-weight", isSelected ? "bold" : "normal")
             .style("cursor", "pointer")
             .on("click", () => {
