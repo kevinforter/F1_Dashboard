@@ -966,16 +966,29 @@ function renderDriverSeasonDelta(races, results, driverId) {
         .style("text-anchor", "middle").style("fill", "#888")
         .style("font-size", "10px").text("Position (1st is Top)");
 
-    // Legend
-    const legend = svg.append("g").attr("transform", `translate(${width - 100}, -25)`);
-    
-    // Legend Dot 1: Start
-    legend.append("circle").attr("r", 3).attr("fill", "#222").attr("stroke", "#888").attr("stroke-width", 1.5);
-    legend.append("text").attr("x", 8).attr("y", 4).text("Start").style("fill", "#aaa").style("font-size", "10px");
+    // HTML Legend (Absolute Position)
+    container.style("position", "relative"); // Ensure container is reference for absolute
 
-    // Legend Dot 2: Finish
-    legend.append("circle").attr("cx", 45).attr("cy", 0).attr("r", 4).attr("fill", "#00D2BE").attr("stroke", "#fff");
-    legend.append("text").attr("x", 55).attr("y", 4).text("Finish").style("fill", "#aaa").style("font-size", "10px");
+    const legend = container.append("div")
+        .style("position", "absolute")
+        .style("bottom", "-10px")
+        .style("right", "10px")
+
+        .style("padding", "4px 8px")
+        .style("border-radius", "4px")
+        .style("display", "flex")
+        .style("gap", "12px")
+        .style("z-index", "10");
+
+    // Start Item
+    const startItem = legend.append("div").style("display", "flex").style("align-items", "center").style("gap", "4px");
+    startItem.append("div").style("width", "8px").style("height", "8px").style("border", "1.5px solid #888").style("border-radius", "50%").style("background", "transparent");
+    startItem.append("span").text("Start").style("color", "#aaa").style("font-size", "11px");
+
+    // Finish Item
+    const finishItem = legend.append("div").style("display", "flex").style("align-items", "center").style("gap", "4px");
+    finishItem.append("div").style("width", "8px").style("height", "8px").style("background", "#00D2BE").style("border-radius", "50%");
+    finishItem.append("span").text("Finish").style("color", "#aaa").style("font-size", "11px");
 }
 
 // --- VIEW 4: DRIVER + CIRCUIT (HISTORICAL TIMELINE) ---
